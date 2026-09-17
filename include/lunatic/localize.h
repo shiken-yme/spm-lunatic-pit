@@ -13,31 +13,34 @@
 namespace mod {
     using namespace spm;
 
-    /*
-        Macros to reduce redundancy somewhat
-    */
+/*
+    Macros to reduce redundancy somewhat
+*/
 
-    // Start a new text box
-    #define BRK "<k>\n<p>\n"
+// Start a new text box
+#define BRK "<k>\n<p>\n"
 
-    // Initiate a system text box
-    #define INIT_SYS "<system>\n"
+// Initiate a system text box
+#define INIT_SYS "<system>\n"
 
-    // Continue text after a selection is made
-    #define CONT "<p>\n"
+// Initiate a Tippi tattle text box
+#define INIT_TATTLE "<fairy><keyyon>"
 
-    // Continue text after a selection is made, specifying system type (possibly redundant)
-    #define CONT_SYS "<p><system>\n"
+// Continue text after a selection is made
+#define CONT "<p>\n"
 
-    // End a text box
-    #define END "<k>"
+// Continue text after a selection is made, specifying system type (possibly redundant)
+#define CONT_SYS "<p><system>\n"
 
-    // Suspend a text box with a text selection prompt
-    #define PROMPT "<o>"
+// End a text box
+#define END "<k>"
 
-    // I don't think this will ever be used in its current state, but just in case
-    #define STR(text) \
-        #text "\n"
+// Suspend a text box with a text selection prompt
+#define PROMPT "<o>"
+
+// I don't think this will ever be used in its current state, but just in case
+#define STR(text) \
+    #text "\n"
 
     enum Tribe2Tattle_Types {
         /* 0x0 */ TATTLE,
@@ -168,8 +171,8 @@ namespace mod {
         "Merluna";
 
     const char merlunaFeaturesDesc[] =
-        "The esoteric purveyor of\n"
-        "Divine Judgement!";
+        "The esoteric purveyor of Divine\n"
+        "Judgement!... But not right now.\n";
 
     const char marioFeaturesName[] =
         "Mario";
@@ -295,6 +298,11 @@ namespace mod {
         "Oh, and just a warning...\n"
         "<wait 500><dynamic 3>Please</dynamic> don't open chests if\n"
         "you don't have the keys.\n" END;
+
+    const char chestKeysToHp[] =
+        INIT_SYS
+        "%d chest keys were converted\n"
+        "to %d HP!" END;
 
     const char smallChestCoins[] =
         "<system>\nYou received %d coins!\n<k>";
@@ -499,7 +507,9 @@ namespace mod {
         "Limerence Voucher";
 
     const char blackVDesc[] =
-        "Contrivance Voucher";
+        "A world without him is empty...\n"
+        "A life without him is empty...\n" BRK
+        "...so let there be light.\n";
 
     const char soul1Desc[] =
         "Increases Crit Rate by 4%.";
@@ -676,8 +686,8 @@ namespace mod {
         "<wait 500><shake>Not yet, it won't.\n"
         "</shake><k>\n<p>\n"
         "<wave>The end is never the end.\n"
-        "</wave><wait 500>Perhaps you should take some\n"
-        "solace in that.\n" BRK
+        "</wave><wait 500>Perhaps you should take\n"
+        "some solace in that.\n" BRK
         "This is far from the end of\n"
         "this saga.<wait 500> Please look forward\n"
         "to future updates.\n" END;
@@ -1366,7 +1376,7 @@ namespace mod {
         "\"Guess I'll just stay put...\"\n" BRK
         "Upon taking damage, %d%% chance\n"
         "to receive a status effect.\n" BRK
-        "You may either be Frozen or\n"
+        "You may be Frozen or\n"
         "Slowed for %d seconds.\n" BRK
         "Additionally, the entire world\n"
         "slows down by 10%%.";
@@ -1386,7 +1396,7 @@ namespace mod {
     const char ruinDesc[] =
         "Disorder: Ruin\n"
         "\"Please... turn the lights back on...\"\n" BRK
-        "Placeholder";
+        "Placeholder\n";
 
     const char apathyIntro[] =
         "<system>A wave of uncertainty strikes\n"
@@ -1550,11 +1560,9 @@ namespace mod {
         "You're now bound by pure,\n"
         "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>indolence.\n"
         "</shake><k>\n<p>\n"
-        "Getting hit will result in\n"
-        "a status effect occurring.\n" BRK
-        "You might get frozen or\n"
-        "get slowed down for a\n"
-        "certain amount of time.\n" BRK
+        "Getting hit may result in\n"
+        "being frozen or slowed down\n"
+        "for some time.\n" BRK
         "Additionally, the world\n"
         "slows down slightly while\n"
         "the Disorder is active.\n" END;
@@ -1733,16 +1741,16 @@ namespace mod {
         "</shake></col></dynamic><k>";
 
     const char gabbiMadge[] =
-        "<dynamic 3>O-ouch...!!<wait 500> Why didst thou\n"
-        "d-do that?<wait 500> <shake>W-what is thy\n"
-        "problem,<wait 200> thee wretched knave!?\n"
-        "</shake></dynamic><k>\n<p>\n"
+        "<dynamic 3>O-ouch...!!<wait 500> Why didst thou d-do\n"
+        "that?<wait 500> <shake>W-what is thy problem,\n"
+        "<wait 200>thee wretched knave!?\n"
+        "</shake><k>\n<p>\n"
         "P-p-prithee,<wait 200> tellest me why\n"
-        "I should not o-obliterate\n"
-        "thee h-hither and now...!?\n" END;
+        "I should not <shake>o-obliterate\n"
+        "</shake>thee h-hither and now...!?\n" END;
 
     const char gabbiSorry[] =
-        "<shake>U-um...>/shake><wait 500> I am s-sorry for mine\n"
+        "<shake>U-um...</shake><wait 500> I am s-sorry for mine\n"
         "outburst...<wait 500> verily, I was quite\n"
         "sensorily o-overwhelmed...\n" END;
 
@@ -1754,7 +1762,7 @@ namespace mod {
         "I could really use the money...\n"
         "<wait 500>so, um...<wait 200> ahhh...<wait 200> d-dost thou\n"
         "wish to buy some keys...?\n"
-        "<wait 200><o>";
+        "<wait 200>" PROMPT;
 
     const char gabbiIntro_N[] =
         "G-greetings...!<wait 500> I hope thee\n"
@@ -1764,8 +1772,8 @@ namespace mod {
     const char gabbiIntro_S[] =
         "<shake>Ah, h-hello again...<wait 500> D-dost\n"
         "thou wish to purchase mine\n"
-        "w-wares... <wait 500><small><scale 0.67>Sniffle...<wait 300> Uwehh...\n"
-        "</shake></small></scale>" PROMPT;
+        "w-wares... <wait 500><scale 0.67>Sniffle...<wait 300> Uwehh...\n"
+        "</shake></scale>" PROMPT;
 
     const char gabbiIntro_B[] =
         "Ah, g-greetings...!<wait 500> I am ever\n"
@@ -1775,13 +1783,14 @@ namespace mod {
 
     const char gabbiSayYes[] =
         CONT
-        "O-okay... <wait 500><small><scale 0.67>thank thee...\n" END;
+        "O-okay...\n"
+        "<wait 500><scale 0.67>Thank thee..." END;
 
     const char gabbiSayNo[] =
         CONT
         "Oh...<wait 500> oh, well...<wait 500> T-thank thee\n"
         "for t-talking to me anyway...\n"
-        "<wait 500><shake><small><scale 0.67>I-I-I am sorry to waste thy time...\n" END;
+        "<wait 500><shake><scale 0.67>I-I-I am sorry to waste thy time...\n" END;
 
     const char gabbiBroke[] =
         CONT
@@ -1793,16 +1802,15 @@ namespace mod {
         "know s-such...\n" BRK
         "I am so sorry, verily...<wait 500> I hope\n"
         "t-things improveth for thee...\n"
-        "<wait 500><shake><small><scale 0.67>Yea,<wait 200> w-we art in this t-together...\n" END;
+        "<wait 500><shake><scale 0.67>Yea,<wait 200> w-we art in this t-together...\n" END;
 
     const char gabbiBuyNothing[] =
         "Ah...<wait 500> ahh, a-all right then...\n"
         "<wait 500>Havest safe travels, prithee...\n"
-        "<wait 500><shake><small><scale 0.67>Sniffle...\n" END;
+        "<wait 500><shake><scale 0.67>Sniffle...\n" END;
 
     const char gabbiThanks_N[] =
-        "Thank t-thee for thy patronage...!\n"
-        "<wait 500>I am ever so g-grateful to thee...\n"
+        "Thanks for thy patronage...!\n"
         "<wait 500>F-fare thee well!\n" END;
 
     const char gabbiThanks_B[] =
@@ -1810,7 +1818,7 @@ namespace mod {
         "much, mine d-dearest customer...!\n" BRK
         "Thy generosity must know no\n"
         "bounds, v-verily... Prithee,\n"
-        "enjoyest thy keys...! <small><scale 0.67>Heehee... <icon HM 0.6 -20 31 0>\n" END;
+        "enjoyest thy keys...! <scale 0.67>Heehee... <icon HM 0.6 -20 31 0>\n" END;
 
     const char gabbiSelectInstructions[] =
         "Buy some keys!\n"
@@ -1860,9 +1868,9 @@ namespace mod {
         "</dynamic><k>";
 
     const char mitchBuyNothing[] =
-        "Nothin'?<wait 500> Right on, man, so\n"
-        "yuh've chosen \"get outta here.\"\n"
-        "<wait 500><dynamic 3>Beat it!<wait 200> Scram!<wait 200> Shoo!<wait 200> NOW!\n"
+        "Nothin'?<wait 500> Right on, man, so ya\n"
+        "chose \"get outta here.\" <wait 500><dynamic 3>OKAY!\n"
+        "<wait 500>Beat it!<wait 200> Scram!<wait 200> Shoo!<wait 200> NOW!\n"
         "</dynamic><k>";
 
     const char mitchThanks[] =
@@ -2025,7 +2033,8 @@ namespace mod {
         "foes in the Pit of 100 Trials.";
 
     const char tattle_hyper_goomba[] =
-        "<fairy><keyyon>It's a Hyper Goomba...\n"
+        INIT_TATTLE
+        "It's a Hyper Goomba...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2038,7 +2047,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_spiked_gloomba[] =
-        "<fairy><keyyon>It's a Spiked Gloomba...\n"
+        INIT_TATTLE
+        "It's a Spiked Gloomba...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2051,7 +2061,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_spiked_hyper_goomba[] =
-        "<fairy><keyyon>It's a Spiked Hyper Goomba...\n"
+        INIT_TATTLE
+        "It's a Spiked Hyper Goomba...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2064,7 +2075,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_hyper_paragoomba[] =
-        "<fairy><keyyon>It's a Hyper Paragoomba...\n"
+        INIT_TATTLE
+        "It's a Hyper Paragoomba...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2077,7 +2089,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_kamikaze_goomba[] =
-        "<fairy><keyyon>It's a Kamikaze Goomba...\n"
+        INIT_TATTLE
+        "It's a Kamikaze Goomba...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2090,7 +2103,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_dark_koopa[] =
-        "<fairy><keyyon>It's a Dark Koopa...\n"
+        INIT_TATTLE
+        "It's a Dark Koopa...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2103,7 +2117,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_dark_koopatrol[] =
-        "<fairy><keyyon>It's a Dark Koopatrol...\n"
+        INIT_TATTLE
+        "It's a Dark Koopatrol...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2116,7 +2131,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_dark_paratroopa[] =
-        "<fairy><keyyon>It's a Dark Paratroopa...\n"
+        INIT_TATTLE
+        "It's a Dark Paratroopa...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2129,7 +2145,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_red_spike_top[] =
-        "<fairy><keyyon>It's a Red Spike Top...\n"
+        INIT_TATTLE
+        "It's a Red Spike Top...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2142,7 +2159,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_sky_blue_spiny[] =
-        "<fairy><keyyon>It's a Sky-Blue Spiny...\n"
+        INIT_TATTLE
+        "It's a Sky-Blue Spiny...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2155,7 +2173,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_dark_bones[] =
-        "<fairy><keyyon>It's a Dark Bones...\n"
+        INIT_TATTLE
+        "It's a Dark Bones...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2168,7 +2187,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_shady_hammer_bro[] =
-        "<fairy><keyyon>It's a Shady Hammer Bro...\n"
+        INIT_TATTLE
+        "It's a Shady Hammer Bro...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2181,7 +2201,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_shady_boomerang_bro[] =
-        "<fairy><keyyon>It's a Shady Boomerang Bro...\n"
+        INIT_TATTLE
+        "It's a Shady Boomerang Bro...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2194,7 +2215,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_ice_bro[] =
-        "<fairy><keyyon>It's an Ice Bro...\n"
+        INIT_TATTLE
+        "It's an Ice Bro...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2207,7 +2229,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_shady_magikoopa[] =
-        "<fairy><keyyon>It's a Shady Magikoopa...\n"
+        INIT_TATTLE
+        "It's a Shady Magikoopa...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2220,7 +2243,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_shady_striker[] =
-        "<fairy><keyyon>It's a Shady Striker...\n"
+        INIT_TATTLE
+        "It's a Shady Striker...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2233,7 +2257,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_bomb_boo[] =
-        "<fairy><keyyon>It's a Bomb Boo...\n"
+        INIT_TATTLE
+        "It's a Bomb Boo...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2246,7 +2271,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_white_clubba[] =
-        "<fairy><keyyon>It's a White Clubba...\n"
+        INIT_TATTLE
+        "It's a White Clubba...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2259,7 +2285,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_green_fuzzy[] =
-        "<fairy><keyyon>It's a Green Fuzzy...\n"
+        INIT_TATTLE
+        "It's a Green Fuzzy...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2272,7 +2299,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_hyper_cleft[] =
-        "<fairy><keyyon>It's a Hyper Cleft...\n"
+        INIT_TATTLE
+        "It's a Hyper Cleft...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2285,7 +2313,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_dark_puff[] =
-        "<fairy><keyyon>It's a Dark Puff...\n"
+        INIT_TATTLE
+        "It's a Dark Puff...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2298,7 +2327,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_tileoid_pu[] =
-        "<fairy><keyyon>It's a Tileoid PU...\n"
+        INIT_TATTLE
+        "It's a Tileoid PU...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2311,7 +2341,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_bawbus[] =
-        "<fairy><keyyon>It's a Bawbus...\n"
+        INIT_TATTLE
+        "It's a Bawbus...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2324,7 +2355,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_ninjeremiah[] =
-        "<fairy><keyyon>It's a Ninjeremiah...\n"
+        INIT_TATTLE
+        "It's a Ninjeremiah...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2337,7 +2369,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_skellobyte[] =
-        "<fairy><keyyon>It's a Skellobyte...\n"
+        INIT_TATTLE
+        "It's a Skellobyte...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2350,7 +2383,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_spiky_skellobyte[] =
-        "<fairy><keyyon>It's a Spiky Skellobyte...\n"
+        INIT_TATTLE
+        "It's a Spiky Skellobyte...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2363,7 +2397,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_ash_cherbil[] =
-        "<fairy><keyyon>It's an Ash Cherbil...\n"
+        INIT_TATTLE
+        "It's an Ash Cherbil...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2376,7 +2411,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_shady_koopa[] =
-        "<fairy><keyyon>It's a Shady Koopa...\n"
+        INIT_TATTLE
+        "It's a Shady Koopa...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2389,7 +2425,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_flip_shady_koopa[] =
-        "<fairy><keyyon>It's a Shady Koopa...\n"
+        INIT_TATTLE
+        "It's a Shady Koopa...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2402,7 +2439,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_flip_buzzy_beetle[] =
-        "<fairy><keyyon>It's a Buzzy Beetle...\n"
+        INIT_TATTLE
+        "It's a Buzzy Beetle...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2415,7 +2453,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_flip_spike_top[] =
-        "<fairy><keyyon>It's a Spike Top...\n"
+        INIT_TATTLE
+        "It's a Spike Top...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2428,7 +2467,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_green_magikoopa[] =
-        "<fairy><keyyon>It's a Green Magikoopa...\n"
+        INIT_TATTLE
+        "It's a Green Magikoopa...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2441,7 +2481,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_white_magikoopa[] =
-        "<fairy><keyyon>It's a White Magikoopa...\n"
+        INIT_TATTLE
+        "It's a White Magikoopa...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2454,7 +2495,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_red_magikoopa[] =
-        "<fairy><keyyon>It's a Red Magikoopa...\n"
+        INIT_TATTLE
+        "It's a Red Magikoopa...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2467,7 +2509,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_spinia[] =
-        "<fairy><keyyon>It's a Spinia...\n"
+        INIT_TATTLE
+        "It's a Spinia...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2480,7 +2523,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_spunia[] =
-        "<fairy><keyyon>It's a Spunia...\n"
+        INIT_TATTLE
+        "It's a Spunia...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2493,7 +2537,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_bullet_william[] =
-        "<fairy><keyyon>It's a Bullet William...\n"
+        INIT_TATTLE
+        "It's a Bullet William...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2506,7 +2551,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_william_blaster[] =
-        "<fairy><keyyon>It's a William Blaster...\n"
+        INIT_TATTLE
+        "It's a William Blaster...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2519,7 +2565,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_bleepboxer[] =
-        "<fairy><keyyon>It's a Bleepboxer...\n"
+        INIT_TATTLE
+        "It's a Bleepboxer...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2532,7 +2579,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_kilo_muth[] =
-        "<fairy><keyyon>It's a Kilo Muth...\n"
+        INIT_TATTLE
+        "It's a Kilo Muth...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2545,7 +2593,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_yellow_shy_guy[] =
-        "<fairy><keyyon>It's a Yellow Shy Guy...\n"
+        INIT_TATTLE
+        "It's a Yellow Shy Guy...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2558,7 +2607,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_green_shy_guy[] =
-        "<fairy><keyyon>It's a Green Shy Guy...\n"
+        INIT_TATTLE
+        "It's a Green Shy Guy...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2571,7 +2621,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_blue_shy_guy[] =
-        "<fairy><keyyon>It's a Blue Shy Guy...\n"
+        INIT_TATTLE
+        "It's a Blue Shy Guy...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n"
         "<wait 250>Defense is 3.\n" BRK
         "This is placeholder text...\n"
@@ -2585,7 +2636,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_shy_guy[] =
-        "<fairy><keyyon>It's a Shy Guy...\n"
+        INIT_TATTLE
+        "It's a Shy Guy...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2598,7 +2650,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_gold_chomp[] =
-        "<fairy><keyyon>It's a Gold Chomp...\n"
+        INIT_TATTLE
+        "It's a Gold Chomp...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n"
         "Defense is 5.\n" BRK
         "This is placeholder text...\n"
@@ -2612,7 +2665,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_dark_lakitu[] =
-        "<fairy><keyyon>It's a Dark Lakitu...\n"
+        INIT_TATTLE
+        "It's a Dark Lakitu...\n"
         "<wait 250>Max HP is %d. Attack is %d.\n" BRK
         "This is placeholder text...\n"
         "<wait 250>The developer doesn't want\n"
@@ -2625,7 +2679,8 @@ namespace mod {
         "The dev is very lazy.";
 
     const char tattle_merluna[] =
-        "<fairy><keyyon>That's Merluna...<wait 250> She's a\n"
+        INIT_TATTLE
+        "That's Merluna...<wait 250> She's a\n"
         "mysterious sage that claims to\n"
         "render \"Divine Judgement\"...\n" BRK
         "That is, she can bless you or\n"
@@ -2634,19 +2689,48 @@ namespace mod {
         "Apparently, she's recorded as\n"
         "having been alive 2000 years\n"
         "ago...\n" BRK
-        "Has she really been alive for\n"
-        "so long...?\n" END;
+        "Has she really been around\n"
+        "for so long...?\n" END;
 
     const char tattle_whacka[] =
-        "<fairy><keyyon>That's a Whacka...<wait 250> It's rare to\n"
+        INIT_TATTLE
+        "That's a Whacka...<wait 250> It's rare to\n"
         "see one...<wait 250> They're a delicate\n"
         "species...\n" BRK
         "I'd advise not stomping on\n"
         "it, unless you want to be\n"
         "responsible for its tears...\n" END;
 
+    const char tattle_gabbi[] =
+        INIT_TATTLE
+        "That's Gabbi...<wait 250> She's a delicate\n"
+        "and shy Nimbi...<wait 250> She sells chest\n"
+        "keys for a living...\n" BRK
+        "She has a bad habit of falling\n"
+        "asleep...<wait 250> Especially when it\n"
+        "matters most not to...\n" BRK
+        "She's saving her money up\n"
+        "for something...<wait 250> I think it's\n"
+        "called 'estrogen'...\n" END;
+
+    const char tattle_mitch[] =
+        INIT_TATTLE
+        "That's D-Mitch, better known\n"
+        "as just Mitch...<wait 250> He upsells\n"
+        "special items from chests...\n" BRK
+        "He only accepts chest keys\n"
+        "as payment...<wait 250> And an exorbitant\n"
+        "amount of them, too...\n" BRK
+        "Apparently,<wait 250> there's a very\n"
+        "lucrative aftermarket for\n"
+        "chest keys around here...\n" BRK
+        "He's gruff and rude to almost\n"
+        "everyone... Just not to his\n"
+        "'partner', Jimbo...\n" END;
+
     const char tattle_mover[] =
-        "<fairy><keyyon>That's a Mover...<wait 250> These guys\n"
+        INIT_TATTLE
+        "That's a Mover...<wait 250> These guys\n"
         "dwell in the Pit and can help\n"
         "you skip a few floors...\n" BRK
         "They can get a little pricey,\n"
@@ -2654,7 +2738,8 @@ namespace mod {
         "want to use them...\n" END;
 
     const char tattle_jimbo[] =
-        "<fairy><keyyon>That's Jimbo...<wait 250> He's an Anti Guy\n"
+        INIT_TATTLE
+        "That's Jimbo...<wait 250> He's an Anti Guy\n"
         "that guards civilians from\n"
         "the Pit of 100 Trials...\n" BRK
         "Well, that's what he claims...\n"

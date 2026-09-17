@@ -533,6 +533,7 @@
 
 // evt_map.c
 800ed9b0:evt_map_set_blend
+800eda74:evt_map_blend_off
 800edf24:evt_mapobj_flag_onoff
 800edfec:evt_mapobj_flag4_onoff
 800ed6c0:evt_mapobj_trans
@@ -783,6 +784,9 @@
 80111378:evt_shop_build_flimm_pit_item_tables
 // more
 
+// fairy.c
+8011e90c:fairyItemIdToPtr
+
 // mario.c
 801243a8:marioMain
 80121f48:marioGetPtr
@@ -798,6 +802,7 @@
 801243a8:marioMain
 80126940:marioChgPaper
 80126aac:marioPaperOn
+80128fd4:marioDrawAfterimg
 8012a680:marioTakeDamage
 8012af74:marioDropCatch
 8012b080:marioCheck3d
@@ -922,6 +927,7 @@
 80143064:marioJumpNpc
 
 // mot_walk.c
+80118f40:marioGetWalkSpd
 80118f80:marioGetDashSpd
 
 // mot_swim.c

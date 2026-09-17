@@ -208,10 +208,14 @@ namespace mod {
             tattle = tattle_whacka;
         } else if (msl::string::strstr(npc->name, "jimbo") != nullptr) {
             tattle = tattle_jimbo;
+        } else if (msl::string::strstr(npc->name, "mitch") != nullptr) {
+            tattle = tattle_mitch;
+        } else if (msl::string::strstr(npc->name, "gabbi") != nullptr) {
+            tattle = tattle_gabbi;
         } else
             return nullptr;
         msl::stdio::sprintf(spm::search::search_wp->msgBuf, "<gsearch>\n%s", tattle);
-        return spm::search::search_wp->msgBuf;
+        return search::search_wp->msgBuf;
     }
 
     const char * npcGetNameFromTribeId(s32 tribeId) {

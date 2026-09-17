@@ -201,7 +201,7 @@ namespace mod {
     DanNPCData npcStruct145 = {145, 60, 0, 3, 4};
     DanNPCData npcStruct147 = {147, 80, 0, 2, 4};
     DanNPCData npcStruct151 = {151, 40, 0, 1, 3};
-    DanNPCData npcStruct153 = {153, 20, 1, 1, 2};
+    DanNPCData npcStruct153 = {153, 15, 1, 1, 2};
     DanNPCData npcStruct157 = {157, 10, 0, 2, 4};
     DanNPCData npcStruct158 = {158, 20, 0, 1, 2};
     DanNPCData npcStruct160 = {160, 45, 0, 1, 2};
@@ -952,7 +952,7 @@ namespace mod {
         NPC_POISON_POKEY,
         NPC_AMAZY_DAYZEE,
         NPC_RED_CHOMP,
-        NPC_DARK_CHOMP,
+        NPC_DARK_CHOMP, // Gold Chomp
         NPC_SQUOINKER,
         NPC_BLASTBOXER,
         NPC_RED_I,
@@ -971,24 +971,25 @@ namespace mod {
         NPC_MEGA_MUTH,
         NPC_SHADY_KOOPA,
         NPC_FLIP_SHADY_KOOPA,
-        NPC_DARK_CHERBIL,
-        NPC_DARK_SPINY,
-        NPC_DARK_SPIKE_TOP,
-        NPC_DARK_DULL_BONES,
-        NPC_DARK_CLUBBA,
-        NPC_DARK_DARK_BOO,
-        NPC_DARK_MAGIKOOPA,
-        NPC_DARK_BROOM_MAGIKOOPA,
-        NPC_DARK_TILEOID,
-        NPC_DARK_NINJOE,
-        NPC_DARK_KOOPATROL,
-        NPC_DARK_HEADBONK_GOOMBA,
-        NPC_DARK_SKELLOBIT,
-        NPC_DARK_SPIKY_SKELLOBIT,
-        NPC_DARK_HAMMER_BRO,
-        NPC_DARK_BOOMERANG_BRO,
-        NPC_BOMBSHELL_BILL_BLASTER,
-        NPC_DARK_STRIKER};
+        NPC_DARK_CHERBIL,           // Ash Cherbil
+        NPC_DARK_SPINY,             // Sky-Blue Spiny
+        NPC_DARK_SPIKE_TOP,         // Red Spike Top
+        NPC_DARK_DULL_BONES,        // Dark Bones
+        NPC_DARK_CLUBBA,            // White Clubba
+        NPC_DARK_DARK_BOO,          // Bomb Boo
+        NPC_DARK_MAGIKOOPA,         // Shady Magikoopa
+        NPC_DARK_BROOM_MAGIKOOPA,   // Shady Broom Magikoopa
+        NPC_DARK_TILEOID,           // Tileoid PU
+        NPC_DARK_NINJOE,            // Ninjeremiah
+        NPC_DARK_KOOPATROL,         // ditto lulw
+        NPC_DARK_HEADBONK_GOOMBA,   // Kamikaze Goomba
+        NPC_DARK_SKELLOBIT,         // Skellobyte
+        NPC_DARK_SPIKY_SKELLOBIT,   // Spiky Skellobyte
+        NPC_DARK_HAMMER_BRO,        // Shady Hammer Bro
+        NPC_DARK_BOOMERANG_BRO,     // Shady Boomerang Bro
+        NPC_BOMBSHELL_BILL_BLASTER, // William Blaster
+        NPC_DARK_STRIKER            // Shady Striker
+    };
 
     DanNPCData ** danNpcGetPtr() {
         return (DanNPCData **)DanNPC;
@@ -1098,7 +1099,7 @@ namespace mod {
                     continue;
                 if (Lunatic->RFC.rfcSpecialObtained[itemId - RFC_SPECIAL_START] == true)
                     continue;
-                if ((system::rand() % 100) < 30 && !guaranteeSpecial) // 30% chance to fail at rolling the special item
+                if ((system::rand() % 100) < 20 && !guaranteeSpecial) // 20% chance to fail at rolling the special item
                     continue;
             } else if (itemId < RFC_SPECIAL_START && guaranteeSpecial)
                 continue;
@@ -2401,16 +2402,16 @@ namespace mod {
         s32 difficulty = lpGetDifficulty();
         switch (difficulty) {
         case 0:
-            enemyGenLim1 = 30;
-            enemyGenLim2 = 85;
+            enemyGenLim1 = 25;
+            enemyGenLim2 = 75;
             break;
         case 1:
             enemyGenLim1 = 20;
-            enemyGenLim2 = 75;
+            enemyGenLim2 = 65;
             break;
         case 2:
-            enemyGenLim1 = 25;
-            enemyGenLim2 = 50;
+            enemyGenLim1 = 15;
+            enemyGenLim2 = 45;
             break;
         }
         if (enemyGenRNG < enemyGenLim1) {
@@ -2453,7 +2454,8 @@ namespace mod {
                 limiterMod -= 10; // Ranges from -10 to +0
             } else
                 limiterMod -= 20; // Ranges from -10 to -20
-            // Roll through each limiter. Lower enemyGenRNG values tend toward lower Lv enemies.
+        // Roll through each limiter. Lower enemyGenRNG values tend toward lower Lv enemies.
+        nopeBuffThatShit:
             enemyGenRNG = system::rand() % 100;
             if (enemyGenRNG < ((danLevelData->lv1Limiter) + limiterMod)) {
                 arrayRNG = system::rand() % ARRAY32_COUNT(lv1Tribes);
@@ -2476,12 +2478,15 @@ namespace mod {
                 enemyTribe = lv4Tribes[arrayRNG];
                 // OSREPORTF("Room #%d: tribeArray %d selected; (enemyGenRNG = %d) > (lv3Lim + limMod = %d). limMod = %d, lim = %d.\n", roomGens, tribeArray, enemyGenRNG, ((danLevelData->lv3Limiter) + limiterMod), limiterMod, danLevelData->lv3Limiter);
             }
-            if (depravity) {
-                if (e == 0)
-                    tribeArray = 4;
-                s32 lv4threshold = DepravityGetAllLv4Threshold(difficulty);
-                if (roomGens >= lv4threshold)
-                    tribeArray = 4;
+            if (depravity && (e == 0 || roomGens >= DepravityGetAllLv4Threshold(difficulty)))
+                tribeArray = 4;
+            // Limit piss-easy rooms on Hard and above
+            if (difficulty >= 2) {
+                if (enemyTypes == 1 && tribeArray == 1) // 1 enemy type, easy enemy - buff it 100% of the time
+                    goto nopeBuffThatShit;
+                enemyGenRNG = system::rand() % 100;
+                if (enemyGenRNG > 50 && enemyTypes < 3 && tribeArray == 1) // 1-2 enemy types, rolls an easy enemy - reroll 50% of the time
+                    goto nopeBuffThatShit;
             }
             // Pulls danEnemy from the static array of DanNPCData structs.
             DanNPCData ** danEnemies = danNpcGetPtr();
@@ -2547,6 +2552,9 @@ namespace mod {
                     enemyAmt += 3;
                 } else
                     enemyAmt += 4;
+                if (difficulty == 2) {
+                    enemyAmt += (system::rand() % 3) + 2;
+                }
             }
             // One final boost to the enemy amount on Hard Difficulty!
             if (difficulty == 2) {

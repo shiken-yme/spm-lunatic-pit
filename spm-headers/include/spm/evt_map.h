@@ -13,7 +13,7 @@ EVT_DECLARE_USER_FUNC(evt_mapobj_scale, 4)
 UNKNOWN_FUNCTION(evt_map_set_fog)
 UNKNOWN_FUNCTION(evt_map_fog_onoff)
 EVT_DECLARE_USER_FUNC(evt_map_set_blend, 5)
-UNKNOWN_FUNCTION(func_800eda74)
+EVT_DECLARE_USER_FUNC(evt_map_blend_off, 1)
 UNKNOWN_FUNCTION(func_800edab4)
 
 // evt_mapobj_color(s32 group, const char * name, u8 r, u8 g, u8 b, u8 a)

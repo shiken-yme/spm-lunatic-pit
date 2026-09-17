@@ -1,6 +1,7 @@
 #include <common.h>
 #include <lp_common.h>
 #include <mod.h>
+#include <msgpatch.h>
 #include <msl/math.h>
 #include <spm/animdrv.h>
 #include <spm/effdrv.h>
@@ -29,8 +30,12 @@ namespace mod {
     s32 LPTitleTPLCurIndex = 0;
     s32 LPTitleTPLCurN = 0;
 
-    // Input needs to be positive
     s32 round(f32 in) {
+        bool neg = false;
+        if (in < 0.0f) {
+            neg = true;
+            in *= -1.0f;
+        }
         s32 left = (s32)in;
         in -= left;
         if (in >= 0.5f)
@@ -38,7 +43,15 @@ namespace mod {
         else
             in = 0.0f;
         s32 out = left + in;
+        if (neg)
+            out *= -1;
         return out;
+    }
+
+    s32 round_to(s32 in, s32 to) {
+        f32 fIn = (f32)in;
+        f32 fTo = (f32)to;
+        return (round(fIn / fTo) * fTo);
     }
 
     s32 clamp(s32 input, s32 min, s32 max) {
@@ -155,9 +168,26 @@ namespace mod {
     }
 
     void * lpMakeEffTarget(effdrv::EffTargetType type) {
-        effdrv::EffTarget_Coord * target = memory::__memAlloc(memory::HEAP_EFFECT, sizeof(effdrv::EffTarget_Coord));
+        effdrv::EffTarget_Coord * target = (effdrv::EffTarget_Coord *)memory::__memAlloc(memory::HEAP_MAP, sizeof(effdrv::EffTarget_Coord));
         target->type = type;
         return target;
+    }
+
+    void lpBaldioOnOff(bool onOff) {
+        if (onOff) {
+            mario::marioCharPoseNames[mario::PLAYER_MARIO][0] = "p_wii_bldio";
+            mario::marioCharBackPoseNames[mario::PLAYER_MARIO][0] = "p_wii_bldio_r";
+            msgpatch::msgpatchAddEntry("in_pc_mario", baldMarioName, false);
+            msgpatch::msgpatchAddEntry("msg_pc_mario", baldMarioDesc, false);
+            item_data::itemDataTable[item_data::ITEM_ID_CHAR_MARIO].iconId = TPLPATCH_ICON(ICON_BALDIO);
+        } else {
+            mario::marioCharPoseNames[mario::PLAYER_MARIO][0] = "p_wii_mario";
+            mario::marioCharBackPoseNames[mario::PLAYER_MARIO][0] = "p_wii_mario_r";
+            msgpatch::msgpatchDelEntry("in_pc_mario");
+            msgpatch::msgpatchDelEntry("msg_pc_mario");
+            item_data::itemDataTable[item_data::ITEM_ID_CHAR_MARIO].iconId = icondrv::ICON_MARIO;
+        }
+        return;
     }
 
     s32 lpGetDanLv() {
@@ -231,8 +261,10 @@ namespace mod {
 
     void npcMakeHolo(npcdrv::NPCEntry * npc) {
         npcSetDanFlag(npc, DAN_NPC_HOLOGRAPHIC);
-        npc->maxHp *= 4;
-        npc->hp *= 4;
+        if (npc->maxHp > 1 || npc->tribeId == NPC_GOOMBA) {
+            npc->maxHp = (npc->maxHp + 10) * 2;
+            npc->hp = npc->maxHp;
+        }
         if ((npc->m_Anim).m_nPoseId != -1)
             animdrv::animPoseSetDispCallback2((npc->m_Anim).m_nPoseId, (void *)mi4::mi4MimiHolographicEffect, nullptr);
         npcdrv::NPCPart * part = npc->parts;

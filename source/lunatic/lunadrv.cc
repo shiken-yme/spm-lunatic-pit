@@ -422,11 +422,10 @@ namespace mod {
         (void)firstRun;
         (void)evtEntry;
         s32 currentFloor = swdrv::swByteGet(1);
-        bool active = DepravityCheckActive();
-        if (!active)
-            return 2;
-        DanGen_Enemies(currentFloor, true);
-        DanGen_Enemies_Apply();
+        if (DepravityCheckActive() == true) {
+            DanGen_Enemies(currentFloor, true);
+            DanGen_Enemies_Apply();
+        }
         return 2;
     }
 
@@ -436,23 +435,23 @@ namespace mod {
         s32 difficulty = lpGetDifficulty();
         switch (difficulty) {
         case 0:
-            wp->attackEffectChance = 25;
+            wp->attackEffectChance = 15;
             wp->slowDuration = 5;
             break;
         case 1:
-            wp->attackEffectChance = 50;
+            wp->attackEffectChance = 25;
             wp->slowDuration = 5;
             break;
         case 2:
-            wp->attackEffectChance = 75;
+            wp->attackEffectChance = 35;
             wp->slowDuration = 10;
             break;
         default:
-            wp->attackEffectChance = 100;
+            wp->attackEffectChance = 50;
             wp->slowDuration = 10;
             break;
         }
-        spmario::gp->gameSpeed = 0.9f;
+        spmario::gp->gameSpeed = 0.82f;
         return;
     }
 
@@ -480,10 +479,10 @@ namespace mod {
             effdrv::EffEntry * eff = temp_unk::effSpmVoltEntry(0, 0.33f, lpMakeEffTarget(effdrv::TARGET_MARIO), -1);
             wii::gx::GXColor black = {0, 0, 0, 255};
             effpatch::effpatchColorMaskEntry(eff, black, black, nullptr);
-            mario::MarioWork * mario = mario::marioGetPtr();
-            spmario_snd::spsndSFXOn_3D("SFX_I_THUNDER1", mario->position);
-            spmario_snd::spsndSFXOn_3D("SFX_I_BIRIBIRI2", mario->position);
-            spmario_snd::spsndSFXOn_3D("SFX_EVT_HELWANWAN_POWERUP1", mario->position);
+            wii::mtx::Vec3 * pos = &mario::marioGetPtr()->position;
+            spmario_snd::spsndSFXOn_3D("SFX_I_THUNDER1", pos);
+            spmario_snd::spsndSFXOn_3D("SFX_I_BIRIBIRI2", pos);
+            spmario_snd::spsndSFXOn_3D("SFX_EVT_HELWANWAN_POWERUP1", pos);
         } else {
             wp->subtimer = 10;
         }
@@ -793,36 +792,39 @@ namespace mod {
         s32 forcedDisorder = -1;
         switch (difficulty) {
         case 0:
-            compare = 50;
+            compare = 60;
             break;
         case 1:
-            compare = 80;
+            compare = 90;
             break;
         case 2:
-            compare = 120;
+            compare = 150;
             break;
         default:
-            compare = 360;
+            compare = 350;
             break;
         }
         if (difficulty == 2 && currentFloor >= 189) {
             forcedDisorder = DISORDER_WHITE;
-            compare = 360;
+            compare = 350;
             if ((currentFloor % 10) == 3)
                 compare = 1000;
         }
         if (num == 999)
-            num = system::irand(999);
+            num = system::irand(999); // Please don't ask
         if (num < compare) {
-            s32 disorderRNG;
-            do {
+            s32 disorderRNG = -1;
+            for (s32 i = 0; i < 50; i += 1) { // Block Prejudice before Floor 20 & prevent disorders from reoccurring in a run
                 if (forcedDisorder == -1)
                     disorderRNG = system::rand() % DISORDER_PURPLE + 1;
                 else
                     disorderRNG = forcedDisorder;
-            } while (!(disorderRNG == DISORDER_YELLOW && currentFloor < 19)); // Block Prejudice before Floor 20
-            if (Lunatic->Luna.DW.disorderTrig[disorderRNG - 1] == false) // Prevent disorders from reoccurring in a run
+                if ((disorderRNG == DISORDER_YELLOW && currentFloor < 19) || Lunatic->Luna.DW.disorderTrig[disorderRNG - 1] == true)
+                    continue;
                 Lunatic->Luna.DW.preId = disorderRNG;
+                Lunatic->Luna.DW.disorderTrig[disorderRNG - 1] = true;
+                break;
+            }
         }
         return;
     }

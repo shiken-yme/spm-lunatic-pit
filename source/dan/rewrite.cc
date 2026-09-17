@@ -580,7 +580,7 @@ namespace mod {
             mario->motTime = 2.0;     // IDK but mot_jump does this lolololol
             // spmario_snd::spsndSFXOff(mario->motTempS[2]); // Disable spindash sound
             mario->motTempS[2] = -1;
-            mario->hitObjs1[3] = mario->hitObjs1[2];
+            mario->hitObjJumpFrom = mario->hitObjRide;
             mario_hit::clear_hitobj_ride();
             mario->airTimer = 0.0;
             mario->jumpPeakAirTime = 0.0;
@@ -650,7 +650,7 @@ namespace mod {
             mario->lastFallPeakPos.z = mario->position.z;
             switchedFlags = true;
         }
-        if (mario->hitObjs1[2] != nullptr && mario->motTime >= 5.0) // End immediately if on ground
+        if (mario->hitObjRide != nullptr && mario->motTime >= 5.0) // End immediately if on ground
         {
             mario_sbr::marioAdjustMoveDir();
             mario->flags &= ~0x10000;
@@ -692,10 +692,14 @@ namespace mod {
             mario->trigFlags &= ~0x1; // MARIO_TRIG_FLAG_MOTION_ID_CHANGED
             mario->subMotionId = 10;
             mario->motTime = 0.0;
-            if (mario->character == mario::PLAYER_PEACH) {
-                mario::marioChgPose("KJ_1A");
+            if (mario->caught.npc == nullptr) {
+                if (mario->character == mario::PLAYER_PEACH) {
+                    mario::marioChgPose("KJ_1A");
+                } else {
+                    mario::marioChgPose("SD_1");
+                }
             } else {
-                mario::marioChgPose("SD_1");
+                mario::marioChgPose("N_8");
             }
             mario->dispFlags |= 0x104;            // MARIO_DISP_FLAG_0x4 | MARIO_DISP_FLAG_OVERRIDE_FACING
             if (mario->prevMotionId < MOT_JUMP) { // if previous mot was STAY, WALK, or DASH
@@ -709,10 +713,12 @@ namespace mod {
                         mario->xzSpeedFactor = 0.0;
                     } else { // Holding a direction
                         dashSpd = mot_walk::marioGetDashSpd();
+                        if ((mario->statusFlags & 0x2) != 0) // Slow
+                            dashSpd = mot_walk::marioGetWalkSpd() * 1.2f;
                         mario->xzSpeedFactor = 1440.0; // 1440 is the max; lower this to limit max speed
                         mario->motTempF[0] = (dashSpd * SPINDASH_SPD_MULT);
                     }
-                } else if (mario->hitObjs1[2] == nullptr) { // No floor, in water
+                } else if (mario->hitObjRide == nullptr) { // No floor, in water
                     mario->motTempF[0] = -1.0;
                     mario->miscFlags |= 0x100020;
                 } else if (mario->stickLateralMagnitude <= 0.0) { // Not holding any direction, in water
@@ -720,6 +726,8 @@ namespace mod {
                     mario->xzSpeedFactor = 0.0;
                 } else { // Holding a direction, in water
                     dashSpd = mot_walk::marioGetDashSpd();
+                    if ((mario->statusFlags & 0x2) != 0) // Slow
+                        dashSpd = mot_walk::marioGetWalkSpd() * 1.2f;
                     mario->motTempF[0] = (dashSpd * SPINDASH_SPD_MULT);
                     mario->xzSpeedFactor = 1440.0;
                 }
@@ -730,7 +738,7 @@ namespace mod {
             mario->motTempF[1] = (s32)mario->dispDirectionTarget;
             mario->motTempS[2] = spmario_snd::spsndSFXOn_3D("SFX_F_SPIN_DASH1", &mario->position);
             mario->motTempS[5] = 0;
-            if (!mario::marioCheck3d() || abs_value(mario->directionWorld - mario->directionView) >= 135.0f) {
+            if ((!mario::marioCheck3d() || abs_value(mario->directionWorld - mario->directionView) >= 135.0f) && mario->xzSpeed > 0.0f) {
                 mario->motTempS[5] = 1;
                 mario->motTempF[4] = mario->directionWorld;
                 mario->directionView = mario->directionWorld;
@@ -741,6 +749,9 @@ namespace mod {
             effdrv::effSetName(eff, "marioSpin");
         }
         spmario_snd::spsndSetSfxPlayerPos(mario->motTempS[2], &mario->position);
+        if (((mario->buttonsPressed & WPAD_BTN_1) == WPAD_BTN_1) && fairy::fairyItemIdToPtr(ITEM_ID_FAIRY_HAMMER) != nullptr) {
+            mario_motion::marioChgMot(MOT_HAMMER);
+        }
         switch (mario->subMotionId) {
         case 10: // Immediately after init
             mario->motTime += mario::marioGetGameSpeedScale();
@@ -765,13 +776,13 @@ namespace mod {
                 mario->subMotionId = 20;
             }
             if ((mario->miscFlags & MARIO_MISC_FLAG_SPACE_SWIM) == 0) { // Again, NOT in space
-                if (mario->hitObjs1[2] == nullptr) {                    // No longer on a floor; end spindash immediately
+                if (mario->hitObjRide == nullptr) {                    // No longer on a floor; end spindash immediately
                     spmario_snd::spsndSFXOff(mario->motTempS[2]);
                     mario->motTempS[2] = -1;
                     mario_sbr::marioAdjustMoveDir();
                     mario_motion::marioChgMot(MOT_FALL);
                 } else {                                                                                        // Still on a floor
-                    if (DebugMode && (mario->miscFlags & MARIO_MISC_FLAG_WATER) == 0 && mario->motTime < 4.1) { // Actuate spinjump if spindash is cancelled very early (~4 frames)
+                    if (DebugMode && (mario->miscFlags & MARIO_MISC_FLAG_WATER) == 0 && mario->motTime < 6.1) { // Actuate spinjump if spindash is cancelled very early (~6 frames)
                         if ((mario->buttonsPressed & WPAD_BTN_2) == WPAD_BTN_2) {
                             mario_motion::marioChgMot(MOT_SPINJUMP);
                         } else {
@@ -875,7 +886,7 @@ namespace mod {
     static void detectSpindash() {
         mario::MarioWork * mario = mario::marioGetPtr();
         s32 motion = mario->motionId;
-        if ((motion == MOT_WALK || motion == MOT_DASH || motion == MOT_STAY || motion == MOT_SPACE_SWIM) && (msl::string::strcmp(mario->curPoseName, "D_2") != 0) && (mario->dispFlags & 0x11) == 0 && (mario->flags & 8) == 0) {
+        if ((motion == MOT_WALK || motion == MOT_DASH || motion == MOT_STAY || motion == MOT_SPACE_SWIM) && (mario->hitObjHead == nullptr) && (msl::string::strcmp(mario->curPoseName, "D_2") != 0) && (mario->dispFlags & 0x11) == 0 && (mario->flags & 8) == 0) {
             wii::mtx::Vec3 shake = {0.0f, 0.0f, 0.0f};
             wpadmgr::WpadWork * wpad = wpadmgr::wpadGetWork();
             wii::kpad::KPADStatus * kpad = wpad->statuses[0];

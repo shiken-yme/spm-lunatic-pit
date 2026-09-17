@@ -23,34 +23,56 @@ USING(spm::filemgr::_FileEntry)
 USING(wii::gx::GXTexObj)
 USING(wii::mem::MEMHeapHandle)
 
-#define MEM1_HEAP_COUNT 3
-
-// Korean adds a 10th heap
 #ifdef SPM_KR0
-#define MEM2_HEAP_COUNT 7
-#define HEAP_COUNT 10
+    #define MEMORY_C_VERSION 3
+#elif defined(SPM_EU0) || defined(SPM_EU1)
+    #define MEMORY_C_VERSION 2
 #else
-#define MEM2_HEAP_COUNT 6
-#define HEAP_COUNT 9
+    #define MEMORY_C_VERSION 1
 #endif
 
-#define SMART_HEAP_ID 7
+#if MEMORY_C_VERSION >= 3
+    #define MEM1_HEAP_COUNT 3
+    #define MEM2_HEAP_COUNT 7
+    #define HEAP_COUNT 10
+#elif MEMORY_C_VERSION == 2
+    #define MEM1_HEAP_COUNT 3
+    #define MEM2_HEAP_COUNT 6
+    #define HEAP_COUNT 9
+#else // == 1
+    #define MEM1_HEAP_COUNT 5
+    #define MEM2_HEAP_COUNT 4
+    #define HEAP_COUNT 9
+#endif
+
 #define SMART_ALLOCATION_MAX 2048
 
 enum Heap
 {
-/* 0x0 */ HEAP_MAIN,
-/* 0x1 */ HEAP_MAP,
-/* 0x2 */ HEAP_MEM1_UNUSED,
-/* 0x3 */ HEAP_EXT,
-/* 0x4 */ HEAP_EFFECT,
-/* 0x5 */ HEAP_WPAD,
-/* 0x6 */ HEAP_SOUND,
-/* 0x7 */ HEAP_SMART,
-#ifdef SPM_KR0
-/* 0x8 */ HEAP_FONT,
+#if MEMORY_C_VERSION >= 2
+/* 0x0 */ HEAP_MAIN,               // MEM1
+/* 0x1 */ HEAP_MAP,                // MEM1
+/* 0x2 */ HEAP_MEM1_UNUSED,        // MEM1
+/* 0x3 */ HEAP_EXT,                // MEM2
+/* 0x4 */ HEAP_EFFECT,             // MEM2
+/* 0x5 */ HEAP_WPAD,               // MEM2
+/* 0x6 */ HEAP_SOUND,              // MEM2
+/* 0x7 */ HEAP_SMART,              // MEM2
+#if MEMORY_C_VERSION >= 3
+/* 0x8 */ HEAP_FONT,               // MEM2
 #endif
-/* 0x8 / 0x9 */ HEAP_MEM2_UNUSED
+/* 0x8 / 0x9 */ HEAP_MEM2_UNUSED   // MEM2
+#else // == 1
+/* 0x0 */ HEAP_MAIN,               // MEM1
+/* 0x1 */ HEAP_MAP,                // MEM1
+/* 0x2 */ HEAP_EXT,                // MEM1
+/* 0x3 */ HEAP_EFFECT,             // MEM1
+/* 0x4 */ HEAP_MEM1_UNUSED,        // MEM1
+/* 0x5 */ HEAP_WPAD,               // MEM2
+/* 0x6 */ HEAP_SOUND,              // MEM2
+/* 0x7 */ HEAP_SMART,              // MEM2
+/* 0x8 */ HEAP_MEM2_UNUSED         // MEM2
+#endif
 };
 
 enum HeapSizeType

@@ -277,6 +277,7 @@ namespace mod::customwin {
         if (descs != nullptr) {
             msl::string::memcpy(entry->Descs, descs, sizeof(CWSelectItemDesc) * numDescs);
             entry->num = numDescs;
+            entry->resetNum = numDescs;
         }
         // Establish page defs if select is type Info
         if (type == CWSELECT_INFOGRAPHIC) {
@@ -314,14 +315,16 @@ namespace mod::customwin {
         }
         if (color == nullptr)
             color = &colorFallback;
-        GlobalCW->Select[id]->Descs[GlobalCW->Select[id]->num].cost = cost;
-        GlobalCW->Select[id]->Descs[GlobalCW->Select[id]->num].iconId = iconId;
-        GlobalCW->Select[id]->Descs[GlobalCW->Select[id]->num].itemId = -1;
-        msl::string::memcpy(GlobalCW->Select[id]->Descs[GlobalCW->Select[id]->num].nameTxt, name, msl::string::strlen(name));
-        msl::string::memcpy(GlobalCW->Select[id]->Descs[GlobalCW->Select[id]->num].descTxt, desc, msl::string::strlen(desc));
-        GlobalCW->Select[id]->Descs[GlobalCW->Select[id]->num].nameColor = *color;
-        GlobalCW->Select[id]->Descs[GlobalCW->Select[id]->num].page = page;
-        GlobalCW->Select[id]->num += 1;
+        CWSelect * Entry = GlobalCW->Select[id];
+        Entry->Descs[Entry->num].cost = cost;
+        Entry->Descs[Entry->num].iconId = iconId;
+        Entry->Descs[Entry->num].itemId = -1;
+        msl::string::memcpy(Entry->Descs[Entry->num].nameTxt, name, msl::string::strlen(name));
+        msl::string::memcpy(Entry->Descs[Entry->num].descTxt, desc, msl::string::strlen(desc));
+        Entry->Descs[Entry->num].nameColor = *color;
+        Entry->Descs[Entry->num].page = page;
+        Entry->num += 1;
+        Entry->resetNum = Entry->num;
         return 2;
     }
 
@@ -879,7 +882,7 @@ namespace mod::customwin {
             CWDEBUG_OSREPORT("CustomWin::EvtCWSelectReset: There is no active CWSelect entry; aborting process.\n");
             return 2;
         }
-        for (i = 0; i < GlobalCW->Select[id]->num; i += 1) {
+        for (i = 0; i < GlobalCW->Select[id]->resetNum; i += 1) {
             // Clear msgpatches only if type is not item
             if (GlobalCW->Select[id]->Descs[i].itemId < 1) {
                 msgpatch::msgpatchDelEntry(item_data::itemDataTable[GlobalCW->Select[id]->itemTable[i]].nameMsg);

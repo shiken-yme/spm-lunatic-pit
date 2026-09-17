@@ -123,6 +123,7 @@ namespace mod::customwin {
     struct CWSelect {
         CWSelectType type;
         u32 num;
+        u32 resetNum; // copied from num @ creation time, necessary for when num changes at reset time
         CWSelectItemDesc * Descs;
         CWSelectCallback * BtnOverrides[BTN_MAX]; // A currently not supported
         CWSelectColorization Colorize;

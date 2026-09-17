@@ -1304,15 +1304,15 @@ namespace mod::yme
         mario::MarioWork *mario = mario::marioGetPtr();
         if (ActiveYmeTool == YMETOOLS_OBJ_DISP)
         {
-            if (mario->hitObjs1[9] != nullptr && mario->hitObjs1[9] != 0)
+            if (mario->hitObjHammeredWall != nullptr && mario->hitObjHammeredWall != 0)
             {
-                msl::stdio::sprintf(hitObjName, "%s", mario->hitObjs1[9]->joint->name);
-                wii::os::OSReport("HitObj Ptr: %x (Attr: %x)\n", (u32)mario->hitObjs1[9], mario->hitObjs1[9]->attr);
+                msl::stdio::sprintf(hitObjName, "%s", mario->hitObjHammeredWall->joint->name);
+                wii::os::OSReport("HitObj Ptr: %x (Attr: %x)\n", (u32)mario->hitObjHammeredWall, mario->hitObjHammeredWall->attr);
             }
-            else if (mario->cudgeFloorHitObj != nullptr && mario->cudgeFloorHitObj != 0)
+            else if (mario->hitObjHammeredFloor != nullptr && mario->hitObjHammeredFloor != 0)
             {
-                msl::stdio::sprintf(hitObjName, "%s", mario->cudgeFloorHitObj->joint->name);
-                wii::os::OSReport("HitObj Ptr: %x (Attr: %x)\n", (u32)mario->cudgeFloorHitObj, mario->cudgeFloorHitObj->attr);
+                msl::stdio::sprintf(hitObjName, "%s", mario->hitObjHammeredFloor->joint->name);
+                wii::os::OSReport("HitObj Ptr: %x (Attr: %x)\n", (u32)mario->hitObjHammeredFloor, mario->hitObjHammeredFloor->attr);
             }
             else
             {

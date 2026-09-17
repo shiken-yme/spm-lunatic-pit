@@ -9,7 +9,7 @@
 #include <rfcdrv.h>
 
 namespace mod {
-#define MOD_VERSION "SPM Lunatic Pit beta v3.0 PR6" // Make sure this never exceeds 48 characters for any reason lol
+#define MOD_VERSION "SPM Lunatic Pit beta v3.0 PR6.71" // Make sure this never exceeds 48 characters for any reason lol
 
     enum BlessId : s32 {
         /* 0x0 */ MERLUNA_NULL_BLESS,
@@ -56,6 +56,7 @@ namespace mod {
         ICON_DISORDER_INDOLENCE,
         ICON_DISORDER_MELANCHOLY,
         ICON_DISORDER_RUIN,
+        ICON_BALDIO,
         ICON_CHEST_KEY,
         ICON_B,
         ICON_SETTING_ON,
@@ -135,8 +136,8 @@ namespace mod {
         MOONLIGHT,
         ECLIPSE,
         UMBRA,
-        LUNATIC
-        // CATACLYSM
+        LUNATIC,
+        CATACLYSM
         // VOID?
     };
 
@@ -145,6 +146,7 @@ namespace mod {
         LPDifficulty difficulty;
         s32 savedCoins;
         wii::gx::GXColor marioFullColor;
+        bool hardShadooBlockColChg;
     };
 
     struct BoodinBalls {

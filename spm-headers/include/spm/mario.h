@@ -19,6 +19,7 @@ USING(spm::mobjdrv::MobjEntry)
 USING(spm::npcdrv::NPCEntry)
 USING(wii::mtx::Vec3)
 USING(wii::mtx::Vec3i)
+USING(wii::mtx::Mtx34)
 
 // Returns an override for the name
 typedef const char * (MarioAnimChangeHandler)(const char * newAnimName);
@@ -391,22 +392,25 @@ typedef struct
 /* 0x0198 */ f32 hitboxHeight;
 /* 0x019C */ f32 baseHitboxWidth;
 /* 0x01A0 */ f32 baseHitboxHeight;
-/* 0x01A4 */ u8 unknown_0x1a4[0x1bc - 0x1a4];
-    /*
-        1 is interact (in front of player)
-        2 is stand on
-        3 is jump from
-        6 is head
-        9 is last hammered wall
-        Others unknown
-    */
-/* 0x01BC */ HitObj * hitObjs1[10];
-/* 0x01E4 */ u8 unknown_0x1e4[0x1e8 - 0x1e4];
-/* 0x01E8 */ HitObj * cudgeFloorHitObj; // Updates for 1 frame during hammer action on a floor and then clears, value taken directly from below
-/* 0x01EC */ HitObj * cudgeFloorHitObj2; // Updates only when cudge is used (?)
-/* 0x01F0 */ u8 unknown_0x1ec[0x1f4 - 0x1f0];
-/* 0x01F4 */ HitObj * unknown_0x1f4;
-/* 0x01F8 */ HitObj * unknown_0x1f8;
+/* 0x01A4 */ u8 unknown_0x1a4[0x1b4 - 0x1a4];
+/* 0x01B4 */ f32 targetMovingAngle;
+/* 0x01B8 */ u8 unknown_0x1b8[0x1bc - 0x1b8];
+/* 0x01BC */ HitObj * hitObjBalloon; // Wall touching & interactable
+/* 0x01C0 */ HitObj * hitObjInteract; // Wall touching
+/* 0x01C4 */ HitObj * hitObjRide; // Floor standing on
+/* 0x01C8 */ HitObj * hitObjJumpFrom; // Floor last jumped from
+/* 0x01CC */ HitObj * hitObjPush; // Wall running into
+/* 0x01D0 */ HitObj * hitObjWall; // Wall walking into
+/* 0x01D4 */ HitObj * hitObjHead; // Ceiling being touched
+/* 0x01D8 */ HitObj * hitObjUnder; // Floor directly under
+/* 0x01DC */ HitObj * hitObjShadow; // Floor under where player shadow displays
+/* 0x01E0 */ HitObj * hitObjHammeredWall; // set for 1 frame and then clears
+/* 0x01E4 */ HitObj * hitObjLastHammeredWall; // Last hammered wall
+/* 0x01E8 */ HitObj * hitObjHammeredFloor; // Updates for 1 frame during hammer action on a floor and then clears, value taken directly from below
+/* 0x01EC */ HitObj * hitObjLastHammeredFloor; // Updates only when cudge is used (?)
+/* 0x01F0 */ HitObj * unused_0x1f0; // Likely an unused hitobj
+/* 0x01F4 */ HitObj * hitObjWallFront2D; // 2D wall in front of player
+/* 0x01F8 */ HitObj * hitObjWallBack2D; // 2D wall behind player
     /*
         0 is MOBJ interact
         1 is Bowser fire interact
@@ -498,7 +502,10 @@ typedef struct
 /* 0x0E80 */ MarioStatus statusTbl[32];
 /* 0x1300 */ MarioStatus * firstStatus;
 /* 0x1304 */ MarioStatus * lastStatus;
-/* 0x1308 */ u8 unknown_0x1308[0x1360 - 0x1308];
+/* 0x1308 */ u8 unknown_0x1308[0x133c - 0x1308];
+/* 0x133C */ s32 jumpCombo;
+/* 0x1340 */ s32 jumpComboScore;
+/* 0x1344 */ u8 unknown_0x1344[0x1360 - 0x1344];
 /* 0x1360 */ s32 gravityType; // see enum above
     // Unit vectors for each direction under current gravity
 /* 0x1364 */ Vec3 gravUnitRight; // positive x normally
@@ -512,7 +519,7 @@ typedef struct
 /* 0x1498 */ u16 acrobatFlags;
 /* 0x149A */ u8 unknown_0x149a[0x149c - 0x149a];
 /* 0x149C */ f32 stylishLevel;
-/* 0x14A0 */ u8 unknown_0x14a0[0x14a4 - 0x14a0];
+/* 0x14A0 */ s32 curStylishXp;
 /* 0x14A4 */ s32 lastStylishXp;
 /* 0x14A8 */ s32 stylishSfxId;
 /* 0x14AC */ s32 stylishCombo;
@@ -814,7 +821,7 @@ UNKNOWN_FUNCTION(func_80128d1c)
 void marioDisp();
 
 UNKNOWN_FUNCTION(func_80128f2c)
-UNKNOWN_FUNCTION(func_80128fd4)
+void marioDrawAfterimg(Vec3 * pos, Mtx34 mtx, u8 alpha);
 UNKNOWN_FUNCTION(func_801291f8)
 
 /*

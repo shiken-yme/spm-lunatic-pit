@@ -471,7 +471,7 @@ namespace mod {
             bool keyOff = mario::marioKeyOffChk();
             bool ctrlOff = mario::marioCtrlOffChk();
             bool noFade = fadedrv::fadeIsFinish();
-            if (noFade && !keyOff && !ctrlOff && canPause && msl::string::strstr(spmario::gp->mapName, "dan") != nullptr) {
+            if (noFade && !keyOff && !ctrlOff && canPause && msl::string::strstr(spmario::gp->mapName, "dan") != nullptr && !(mario->motionId >= 31 && mario->motionId <= 33)) {
                 pausewin::pausewinPauseGame();
                 hud::hudHide();
                 evtmgr::evtEntryType(LPGUIActiveEffects, 0, 0, 0);

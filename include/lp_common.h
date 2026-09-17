@@ -23,12 +23,6 @@ namespace mod {
 #define DAN_ENEMY(tribeId) \
     (tribeId + 1)
 
-    enum NPCDanFlag : u32 {
-        DAN_NPC_HOLOGRAPHIC = 0x1,
-        DAN_NPC_NEGATIVE = 0x2,
-        DAN_NPC_CHILD = 0x4
-    };
-
 #define RANGE(min, max) \
     (max - min + 1)
 
@@ -39,7 +33,14 @@ namespace mod {
     extern s32 LPTitleTPLCurIndex;
     extern s32 LPTitleTPLCurN;
 
+    enum NPCDanFlag : u32 {
+        DAN_NPC_HOLOGRAPHIC = 0x1,
+        DAN_NPC_NEGATIVE = 0x2,
+        DAN_NPC_CHILD = 0x4
+    };
+
     s32 round(f32 in);
+    s32 round_to(s32 in, s32 to);
     s32 clamp(s32 input, s32 min, s32 max);
     s32 split(s32 in, s32 * out);
     f32 abs_value(f32 in);
@@ -53,6 +54,7 @@ namespace mod {
     EVT_DECLARE_USER_FUNC(evt_lp_get_chest_keys, 1)
     EVT_DECLARE_USER_FUNC(evt_lp_add_chest_keys, 1)
     void * lpMakeEffTarget(effdrv::EffTargetType type);
+    void lpBaldioOnOff(bool onOff);
     s32 lpGetDanLv();      // 1-4
     s32 lpGetDifficulty(); // 0-3
     EVT_DECLARE_USER_FUNC(evt_lp_get_difficulty, 1)

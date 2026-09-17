@@ -863,7 +863,7 @@ namespace mod {
         {ICON_AEGIS_2, aegis2Name, aegis2Desc, aegis2Get, AegisInvocationUse, {33, 96, 255, 100}, {34, 64, 140, 255}, 7},           // Aegis Invocation, +30% DR
         {ICON_AUSPICE_1, auspice1Name, auspice1Desc, auspice1Get, AuspiceEndowmentUse, {212, 53, 61, 100}, {135, 23, 29, 255}, 7},  // Auspice Endowment, +1 DEF
         {ICON_AUSPICE_2, auspice2Name, auspice2Desc, auspice2Get, AuspiceInvocationUse, {212, 53, 61, 100}, {135, 23, 29, 255}, 8}, // Auspice Invocation, +2 DEF
-        {ICON_ARTIFACT_SOUL, artiSoulName, artiSoulDesc, nullptr, SoulArtifactUse, {248, 255, 156, 100}, {206, 217, 61, 255}, -1},
+        {ICON_ARTIFACT_SOUL, artiSoulName, artiSoulDesc, nullptr, SoulArtifactUse, {248, 255, 156, 100}, {164, 179, 0, 255}, -1},
         {ICON_ARTIFACT_SPIRIT, artiSpiritName, artiSpiritDesc, nullptr, SpiritArtifactUse, {41, 194, 255, 100}, {42, 116, 145, 255}, -1},
         {ICON_ARTIFACT_AEGIS, artiAegisName, artiAegisDesc, nullptr, AegisArtifactUse, {33, 96, 255, 100}, {34, 64, 140, 255}, -1},
         {ICON_ARTIFACT_AUSPICE, artiAuspiceName, artiAuspiceDesc, nullptr, AuspiceArtifactUse, {212, 53, 61, 100}, {135, 23, 29, 255}, -1},

@@ -250,7 +250,7 @@
 
 #define CLAMP_INT(var, min, max) \
     EVT_HELPER_CMD(3, 74), EVT_HELPER_OP(var), EVT_HELPER_OP(min), \
-    EVT_HELPER_OP(max)
+    EVT_HELPER_OP(max),
 
 #define SET_USER_WRK(val) \
     EVT_HELPER_CMD(1, 75), EVT_HELPER_OP(val),
