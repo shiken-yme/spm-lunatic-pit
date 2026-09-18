@@ -459,7 +459,7 @@ namespace mod {
                                                      s32 odds = system::rand() % 100;
                                                      if (odds < Lunatic->Luna.DW.UW.Indolence.attackEffectChance) {
                                                          odds = system::rand() % 100;
-                                                         if (odds < 25) // Freeze
+                                                         if (odds < 33) // Freeze
                                                          {
                                                              status |= 0x2000;
                                                          } else {
@@ -1574,7 +1574,7 @@ namespace mod {
 
     s32 animPoseSetMaterialEvtColorWrapper(evtmgr::EvtEntry * evtEntry, bool firstRun) {
         mario::MarioWork * mario = mario::marioGetPtr();
-        bool marioRemoved = swdrv::swGet(1612);
+        bool marioRemoved = swdrv::swGet(1613);
         bool blueToggle = swdrv::swGet(1643);
         s32 i;
         for (i = 0; i < 8; ++i) {
@@ -3690,6 +3690,21 @@ namespace mod {
     }
     EVT_DECLARE_USER_FUNC(dan_70_generate_artifact_defs, 2)
 
+    s32 dan_70_artifact_get_lpitem_id(evtmgr::EvtEntry * evtEntry, bool firstRun) {
+        evtmgr::EvtVar * args = (evtmgr::EvtVar *)evtEntry->pCurData;
+        s32 selectionIdx = evtmgr_cmd::evtGetValue(evtEntry, args[0]);
+        s32 itemId = customwin::CWSelectGetActiveEntry()->Descs[selectionIdx].iconId + (ARTIFACT_SOUL - ICON_ARTIFACT_SOUL) - TPLPATCH_ICON_REDIRECT;
+        s32 trueIdx = selectionIdx;
+        for (s32 i = 0; i < 6; i += 1) {
+            if (i <= (itemId - ARTIFACT_SOUL) && swdrv::swGet(1690 + i) == true)
+                trueIdx += 1;
+        }
+        evtmgr_cmd::evtSetValue(evtEntry, args[1], itemId);
+        evtmgr_cmd::evtSetValue(evtEntry, args[2], trueIdx);
+        return 2;
+    }
+    EVT_DECLARE_USER_FUNC(dan_70_artifact_get_lpitem_id, 3)
+
     EVT_BEGIN(artifactReward)
     USER_FUNC(evt_mobj::evt_mobj_wait_animation_end, PTR("me"), 0)
     USER_FUNC(dan_70_generate_artifact_defs, LW(0), LW(13))
@@ -3698,28 +3713,27 @@ namespace mod {
     USER_FUNC(EvtCWSelectSetBGColor, PTR("Artifact"), PTR(rainbowSelectBgCols), 8)
     USER_FUNC(EvtCWSelectMenuStart, PTR("Artifact"), 0, LW(0))
     IF_NOT_EQUAL(LW(0), -1) // Select menu NOT cancelled
-    SET(LW(14), LW(0))
-    ADD(LW(0), (s32)ARTIFACT_SOUL)
+    USER_FUNC(dan_70_artifact_get_lpitem_id, LW(0), LW(5), LW(14))
     IF_SMALL(LW(14), 4) // Demise and Delight will not trigger this
     USER_FUNC(LPGUIShowHideStats, 1)
     WAIT_MSEC(500)
     END_IF()
     WAIT_MSEC(500)
     USER_FUNC(evt_mario::evt_mario_get_pos, LW(1), LW(2), LW(3))
-    USER_FUNC(RFCProcEffect, LW(0))
+    USER_FUNC(RFCProcEffect, LW(5))
     USER_FUNC(evt_snd::evt_snd_sfxon_3d, PTR("SFX_I_HEART_HUERU1"), LW(1), LW(2), LW(3))
     INLINE_EVT()
     WAIT_MSEC(200)
     USER_FUNC(evt_mario::evt_mario_set_pose, PTR("I_2"), 0)
     END_INLINE()
     USER_FUNC(RFCAnalyzeSpecial, LW(0), 0)
-    WAIT_MSEC(1000)
+    WAIT_MSEC(1400)
     USER_FUNC(evt_mario::evt_mario_set_pose, PTR("S_1"), 0)
     IF_SMALL(LW(14), 4) // Demise and Delight will not trigger this
     USER_FUNC(LPGUIShowHideStats, 0)
     WAIT_MSEC(500)
     END_IF()
-    WAIT_MSEC(500)
+    WAIT_MSEC(100)
     ADD(LW(14), 1690)
     USER_FUNC(ToggleGSWF, LW(14))
     END_IF()
@@ -3893,6 +3907,7 @@ namespace mod {
     EVT_END()
 
     EVT_BEGIN(shadoo_defeat_msg)
+    SET(GSWF(1604), 1)
     USER_FUNC(evt_msg::evt_msg_print, 1, PTR(shadooDefeated), 0, PTR("me"))
     RUN_EVT(dan_70_new_rewards)
     RETURN_FROM_CALL()
@@ -4154,7 +4169,7 @@ namespace mod {
     USER_FUNC(evt_npc::evt_npc_set_axis_movement_unit, PTR("me"), -1)
     // Placeholder
     WAIT_MSEC(2000)
-    USER_FUNC(evt_msg::evt_msg_print, 1, PTR("yo fuck off I don't do\nanything rn lmao\n<k>"), 0, PTR("me"))
+    USER_FUNC(evt_msg::evt_msg_print, 1, PTR(IMISSMYBROTHER), 0, PTR("me"))
     INLINE_EVT()
     USER_FUNC(evt_npc::evt_npc_set_property, PTR("rebear"), 9, PTR(merluna_walmart))
     USER_FUNC(evt_npc::evt_npc_set_anim, PTR("me"), 28, 1)
@@ -4163,6 +4178,9 @@ namespace mod {
     END_INLINE()
     USER_FUNC(evt_cam::evt_cam_zoom_to_coords, 800, 11)
     WAIT_MSEC(800)
+    USER_FUNC(evt_item::evt_item_entry, PTR("IMISSYOU"), (s32)item_data::ITEM_ID_USE_SHINABITA_KINOKO, 0, 0, -1000, 0, 0, 0, 0, 0)
+    USER_FUNC(evt_item::evt_item_flag_onoff, 1, PTR("IMISSYOU"), 8)
+    USER_FUNC(evt_item::evt_item_wait_collected, PTR("IMISSYOU"))
     USER_FUNC(evt_mario::evt_mario_key_on)
     WAIT_MSEC(500)
     USER_FUNC(evt_npc::evt_npc_wait_anim_end, PTR("me"), 1)
@@ -5400,7 +5418,7 @@ namespace mod {
         RFNPCId slot1Npc = NONE;
         s32 flimmWeight = 140;
         s32 boodinWeight = 60;
-        s32 merlunaWeight = 10;
+        s32 merlunaWeight = 2;
         s32 smallChestWeight = 100;
         if (swdrv::swGet(1611) == true) // Merluna disabled
             merlunaWeight = 0;
@@ -5468,6 +5486,7 @@ namespace mod {
     USER_FUNC(RFCGenerate, PTR(new_dan_chest_interact_evt), PTR(new_dan_chest_open_evt))
     // Handle Whacka replacing the chest
     IF_NOT_EQUAL(GSW(22), 8) // If Whacka has not been brutally murdered in vanilla
+    IF_EQUAL(GSWF(1612), 0) // Whacka NOT disabled
     USER_FUNC(evt_sub::evt_sub_random, 100, LW(0))
     IF_SMALL_EQUAL(LW(0), 4) // 5% chance to replace chest with Whacka
     USER_FUNC(evt_mobj::evt_mobj_delete, PTR(rfcChestName))
@@ -5475,6 +5494,7 @@ namespace mod {
     ELSE()
     IF_EQUAL(GSWF(1644), 1)
     RUN_EVT(spawn_whacka)
+    END_IF()
     END_IF()
     END_IF()
     END_IF()
@@ -5610,6 +5630,7 @@ namespace mod {
     EVT_BEGIN(determine_quickstart)
     USER_FUNC(SaveWriteModVersion, -1)
     // Disable some Jimbo parameters
+    SET(GSWF(1611), 1) // Merluna
     SET(GSWF(1621), 1) // Low HP Sounds
     SET(GSWF(1630), 1) // Lighter Tremors
     SET(GSWF(1631), 1) // Aerodynamic
@@ -5762,6 +5783,9 @@ namespace mod {
     USER_FUNC(EvtCWSelectAddListing, PTR("Features"), PTR(merlunaFeaturesName), PTR(merlunaFeaturesDesc), LW(1), 0, 0, 0)
     SET(LW(1), (s32)TPLPATCH_ICON(ICON_SETTING_ON))
     ADD(LW(1), GSWF(1612))
+    USER_FUNC(EvtCWSelectAddListing, PTR("Features"), PTR(whackaFeaturesName), PTR(whackaFeaturesDesc), LW(1), 0, 0, 0)
+    SET(LW(1), (s32)TPLPATCH_ICON(ICON_SETTING_ON))
+    ADD(LW(1), GSWF(1613))
     USER_FUNC(EvtCWSelectAddListing, PTR("Features"), PTR(marioFeaturesName), PTR(marioFeaturesDesc), LW(1), 0, 0, 0)
     USER_FUNC(EvtCWSelectOverrideBtnBehavior, PTR("Features"), BTN_2, PTR(JimboToggleOption))
     USER_FUNC(EvtCWSelectSetBGColor, PTR("Features"), PTR(featuresSelectBgCols), 4)
@@ -5829,38 +5853,43 @@ namespace mod {
     // FEATURES
     CASE_EQUAL(0)
     IF_EQUAL(GSWF(1604), 0)
-    IF_EQUAL(GSW(1622), 0) // Shadoo not defeated, but Features menu opened
-    SET(GSWF(1604), 1)
-    USER_FUNC(evt_msg::evt_msg_print, 1, PTR(jimboWarn), 0, PTR("me"))
-    USER_FUNC(evt_msg::evt_msg_select, 1, PTR(yesNoSelect_NoByDefault))
-    USER_FUNC(evt_msg::evt_msg_continue)
-    IF_EQUAL(LW(0), 1)
-    SET(GW(0), -1)
-    SET(LW(1), -1)
-    END_IF()
-    END_IF()
+        IF_EQUAL(GSW(1622), 0) // Shadoo not defeated, but Features menu opened
+            USER_FUNC(evt_msg::evt_msg_print_add, 1, PTR(jimboWarn))
+            USER_FUNC(evt_msg::evt_msg_select, 1, PTR(yesNoSelect_NoByDefault))
+            IF_EQUAL(LW(0), 1)
+                SET(GW(0), -1)
+                SET(LW(1), -1)
+            END_IF()
+        END_IF()
     END_IF()
     IF_NOT_EQUAL(GW(0), -1)
+    SET(GSWF(1604), 1)
+    USER_FUNC(evt_msg::evt_msg_continue)
     RUN_CHILD_EVT(cwselect_features)
     END_IF()
     // PATCHES
     CASE_EQUAL(1)
+    USER_FUNC(evt_msg::evt_msg_continue)
     RUN_CHILD_EVT(cwselect_patches)
     // ACCESSIBILITY
     CASE_EQUAL(2)
+    USER_FUNC(evt_msg::evt_msg_continue)
     RUN_CHILD_EVT(cwselect_accessibility)
     // LOOP OR END SEQUENCE
     END_SWITCH()
+    IF_EQUAL(GW(0), -1) // Exclusively upon declining to view Features
+    USER_FUNC(evt_msg::evt_msg_print_add, 1, PTR(jimboAnythingElse2))
+    ELSE()
     USER_FUNC(evt_msg::evt_msg_print, 1, PTR(jimboAnythingElse), 0, PTR("me"))
+    END_IF()
     USER_FUNC(evt_msg::evt_msg_select, 1, PTR(jimboSettings))
-    USER_FUNC(evt_msg::evt_msg_continue)
     IF_NOT_EQUAL(LW(0), 3)
     SET(GW(0), LW(0))
-    RUN_EVT(jimbo_real)
+    RUN_CHILD_EVT(jimbo_real)
     RETURN()
     ELSE()
     // END JIMBO CUTSCENE
-    USER_FUNC(evt_msg::evt_msg_print, 1, PTR(jimboBye), 0, PTR("me"))
+    USER_FUNC(evt_msg::evt_msg_print_add, 1, PTR(jimboBye))
     USER_FUNC(evt_cam::evt_cam_zoom_to_coords, 1000, 11)
     WAIT_MSEC(1000)
     USER_FUNC(evt_mario::evt_mario_key_on)
@@ -5879,22 +5908,20 @@ namespace mod {
     USER_FUNC(evt_mario::evt_mario_face_npc, PTR("me"))
     USER_FUNC(evt_npc::evt_npc_set_axis_movement_unit, PTR("me"), 0)
     WAIT_MSEC(1000)
-    // Jimbo first cutscene
-    IF_EQUAL(GSWF(586), 0)
+    IF_EQUAL(GSWF(586), 0) // Jimbo first cutscene
     SET(GSWF(586), 1)
     USER_FUNC(evt_msg::evt_msg_print, 1, PTR(jimboIntro), 0, PTR("me"))
     ELSE()
     USER_FUNC(evt_msg::evt_msg_print, 1, PTR(jimboIntro2), 0, PTR("me"))
     END_IF()
     USER_FUNC(evt_msg::evt_msg_select, 1, PTR(jimboSettings))
-    USER_FUNC(evt_msg::evt_msg_continue)
     IF_NOT_EQUAL(LW(0), 3)
     SET(GW(0), LW(0))
     RUN_CHILD_EVT(jimbo_real)
     RETURN()
     END_IF()
-    USER_FUNC(evt_msg::evt_msg_print, 1, PTR(jimboBye), 0, PTR("me"))
     // END JIMBO CUTSCENE
+    USER_FUNC(evt_msg::evt_msg_print_add, 1, PTR(jimboBye))
     USER_FUNC(evt_cam::evt_cam_zoom_to_coords, 1000, 11)
     WAIT_MSEC(1000)
     USER_FUNC(evt_mario::evt_mario_key_on)

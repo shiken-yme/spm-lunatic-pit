@@ -174,6 +174,13 @@ namespace mod {
         "The esoteric purveyor of Divine\n"
         "Judgement!... But not right now.\n";
 
+    const char whackaFeaturesName[] =
+        "Whacka";
+
+    const char whackaFeaturesDesc[] =
+        "Everyone's favorite blue mole,\n"
+        "Whacka! Please don't whack him.";
+
     const char marioFeaturesName[] =
         "Mario";
 
@@ -438,7 +445,7 @@ namespace mod {
         "while in the Pit.";
 
     const char artiAuspiceDesc[] =
-        "Permanently gain +25% Damage\n"
+        "Permanently gain +20% Damage\n"
         "Reduction while in the Pit.";
 
     const char artiDelightDesc[] =
@@ -537,11 +544,11 @@ namespace mod {
 
     const char auspice1Desc[] =
         "Increases Damage Reduction\n"
-        "by 20%.";
+        "by 15%.";
 
     const char auspice2Desc[] =
         "Increases Damage Reduction\n"
-        "by 30%.";
+        "by 25%.";
 
     const char aegis1Desc[] =
         "Increases Defense by 1.";
@@ -575,10 +582,10 @@ namespace mod {
         "<system>\nYour Crit Mult has been\nincreased by 150%!\n<k>";
 
     const char auspice1Get[] =
-        "<system>\nYour Damage Reduction has\nbeen increased by 20%!\n<k>";
+        "<system>\nYour Damage Reduction has\nbeen increased by 15%!\n<k>";
 
     const char auspice2Get[] =
-        "<system>\nYour Damage Reduction has\nbeen increased by 30%!\n<k>";
+        "<system>\nYour Damage Reduction has\nbeen increased by 25%!\n<k>";
 
     const char aegis1Get[] =
         "<system>\nYour Defense has been\nincreased by 1!\n<k>";
@@ -683,8 +690,7 @@ namespace mod {
         "to your core.\n" BRK
         "But such a terrible fate will\n"
         "not befall you...\n"
-        "<wait 500><shake>Not yet, it won't.\n"
-        "</shake><k>\n<p>\n"
+        "<wait 500><shake>Not yet, it won't.\n</shake>" BRK
         "<wave>The end is never the end.\n"
         "</wave><wait 500>Perhaps you should take\n"
         "some solace in that.\n" BRK
@@ -732,6 +738,22 @@ namespace mod {
         "The temporary HP boost and\n"
         "Attack cut from Phoenix's\n"
         "Tail have now worn off.\n" END;
+
+    // TEMP
+
+    const char IMISSMYBROTHER[] =
+        "<housou>"
+        "<center><wave>Ahhh...<wait 500> Now's not the time,</center>\n"
+        "<center><wait 300>o great Hero!<wait 500> You've caught</center>\n"
+        "<center>me 'lacking',<wait 200> as they say...</center>\n" BRK
+        "<center>Oh, I truly envy you lot...</center>\n"
+        "<center><wait 1000></wave><shake>You'll never know the same</center>\n"
+        "<center>grief as I...<wait 500> Hah...</center>\n" BRK
+        "<center></shake><wave>Well! We shall meet again</center>\n"
+        "<center>in another time and place!</center>\n"
+        "<center></wave><shake><dkey><wait 500>Wah-<wait 200>hah-<wait 200>haaaaah!</center>\n<wait 1000></dkey>" END;
+
+    // END TEMP
 
     const char merlunaIntro[] =
         "<shake>Wah-hah-hah!</shake><wait 500> You've found\n"
@@ -1379,7 +1401,7 @@ namespace mod {
         "You may be Frozen or\n"
         "Slowed for %d seconds.\n" BRK
         "Additionally, the entire world\n"
-        "slows down by 10%%.";
+        "slows down by 18%%.";
 
     const char melancholyDesc[] =
         "Disorder: Melancholy\n"
@@ -1651,6 +1673,7 @@ namespace mod {
         "Sup.<wait 300> What can I do ya for?\n" PROMPT;
 
     const char jimboWarn[] =
+        CONT
         "Whoa.<wait 300> Hoooold up.<wait 300> Ya haven't\n"
         "beaten the Pit yet, so I\n"
         "gotta warn ya...\n" BRK
@@ -1658,10 +1681,15 @@ namespace mod {
         "might spoil the experience for\n"
         "ya.<wait 300> Sure ya wanna proceed?\n" PROMPT;
 
+    const char jimboAnythingElse2[] =
+        CONT
+        "Need anything else?\n" PROMPT;
+
     const char jimboAnythingElse[] =
         "Need anything else?\n" PROMPT;
 
     const char jimboBye[] =
+        CONT
         "Bet. Catch ya later, yo.\n" END;
 
     const char jimboSettings[] =

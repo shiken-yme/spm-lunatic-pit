@@ -263,14 +263,14 @@ namespace mod {
         */
         sup = system::rand() % 100;
         if (sup < 8) {
-            if ((s32)npc != 0 && npc->templateKouraKickScript == 0 && difficulty > 0 && currentFloor > 149 && npc->tribeId != NPC_SHLORP && npc->tribeId != NPC_SHLURP) {
+            if ((s32)npc != 0 && npc->templateKouraKickScript == 0 && difficulty >= 1 && currentFloor > 149 && npc->tribeId != NPC_SHLORP && npc->tribeId != NPC_SHLURP) {
                 npcMakeHolo(npc);
                 danAssignSpecialEnemyItem(npc, (s32)msl::math::sqrt((f32)npc->maxHp), 2);
                 evtmgr_cmd::evtSetValue(evtEntry, args[1], 1);
             }
         } else {
             sup = system::rand() % 100;
-            if (sup < 3 && currentFloor > 174 && difficulty > 1 && npc->tribeId != NPC_BOO && npc->tribeId != NPC_DARK_BOO && npc->tribeId != NPC_DARK_DARK_BOO) {
+            if (sup < 4 && currentFloor > 174 && difficulty >= 2 && npc->tribeId != NPC_BOO && npc->tribeId != NPC_DARK_BOO && npc->tribeId != NPC_DARK_DARK_BOO) {
                 npcMakeNegative(npc);
                 danAssignSpecialEnemyItem(npc, npc->maxHp * 3, 2);
                 evtmgr_cmd::evtSetValue(evtEntry, args[1], 2);

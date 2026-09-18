@@ -2684,13 +2684,13 @@ namespace mod {
         s32 difficulty = lpGetDifficulty();
         switch (difficulty) {
         case 0:
-            flimmMult = 1.5f;
+            flimmMult = 1.2f;
             break;
         case 1:
-            flimmMult = 2.0f;
+            flimmMult = 1.5f;
             break;
         case 2:
-            flimmMult = 2.5f;
+            flimmMult = 1.8f;
             break;
         }
         if (VoucherChkTorn(VOUCHER_YELLOW) == true)

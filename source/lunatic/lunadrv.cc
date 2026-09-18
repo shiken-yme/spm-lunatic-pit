@@ -435,19 +435,19 @@ namespace mod {
         s32 difficulty = lpGetDifficulty();
         switch (difficulty) {
         case 0:
-            wp->attackEffectChance = 15;
+            wp->attackEffectChance = 20;
             wp->slowDuration = 5;
             break;
         case 1:
-            wp->attackEffectChance = 25;
+            wp->attackEffectChance = 30;
             wp->slowDuration = 5;
             break;
         case 2:
-            wp->attackEffectChance = 35;
+            wp->attackEffectChance = 40;
             wp->slowDuration = 10;
             break;
         default:
-            wp->attackEffectChance = 50;
+            wp->attackEffectChance = 60;
             wp->slowDuration = 10;
             break;
         }
