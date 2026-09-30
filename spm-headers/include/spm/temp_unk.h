@@ -46,7 +46,7 @@ extern spm::npcdrv::NPCDefense whacka_defenses;
 // should go in npcdrv.h, but compiler doesn't like recursive includes
 s32 npcHandleHitXp(spm::mario::MarioWork * marioWork, spm::npcdrv::NPCEntry * npcEntry, s32 killXp, s32 unk_variant);
 
-s32 backCursyaHit(spm::npcdrv::NPCEntry * npcEntry, s32 firstRun);
+EVT_DECLARE_USER_FUNC(backCursyaHit, 0)
 
 // too lazy to make a header for these lol
 effdrv::EffEntry * effSpmVoltEntry(f32, f32, void * target, s32);

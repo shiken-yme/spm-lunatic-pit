@@ -262,17 +262,17 @@ namespace mod {
             Todo: maybe try and remove kick behavior from holo koopa-type enemies?
         */
         sup = system::rand() % 100;
-        if (sup < 8) {
-            if ((s32)npc != 0 && npc->templateKouraKickScript == 0 && difficulty >= 1 && currentFloor > 149 && npc->tribeId != NPC_SHLORP && npc->tribeId != NPC_SHLURP) {
+        if (sup < (difficulty * 4)) {
+            if ((s32)npc != 0 && npc->templateKouraKickScript == 0 && currentFloor > 149 && npc->tribeId != NPC_SHLORP && npc->tribeId != NPC_SHLURP) {
                 npcMakeHolo(npc);
-                danAssignSpecialEnemyItem(npc, (s32)msl::math::sqrt((f32)npc->maxHp), 2);
+                danAssignSpecialEnemyItem(npc, (s32)msl::math::sqrt((f32)npc->maxHp), 0);
                 evtmgr_cmd::evtSetValue(evtEntry, args[1], 1);
             }
         } else {
             sup = system::rand() % 100;
             if (sup < 4 && currentFloor > 174 && difficulty >= 2 && npc->tribeId != NPC_BOO && npc->tribeId != NPC_DARK_BOO && npc->tribeId != NPC_DARK_DARK_BOO) {
                 npcMakeNegative(npc);
-                danAssignSpecialEnemyItem(npc, npc->maxHp * 3, 2);
+                danAssignSpecialEnemyItem(npc, npc->maxHp * 3, 3);
                 evtmgr_cmd::evtSetValue(evtEntry, args[1], 2);
             }
         }
@@ -433,8 +433,16 @@ namespace mod {
     SWITCH(LW(6))
     CASE_EQUAL(1)
     USER_FUNC(evt_npc::evt_npc_set_animpose_disp_callback, LW(5), PTR(mi4::mi4MimiHolographicEffect), 0)
+    IF_EQUAL(GSWF(1605), 0)
+    SET(GSWF(1605), 1)
+    SET(LSWF(6), 1)
+    END_IF()
     CASE_EQUAL(2)
     USER_FUNC(evt_npc::evt_npc_set_animpose_disp_callback, LW(5), PTR(DanEnemyNegativeDispCb), 0)
+    IF_EQUAL(GSWF(1606), 0)
+    SET(GSWF(1606), 1)
+    SET(LSWF(7), 1)
+    END_IF()
     END_SWITCH()
     WHILE()
     END_IF()
@@ -478,6 +486,18 @@ namespace mod {
     USER_FUNC(evt_msg::evt_msg_print, 1, PTR(hardDifficultyFirst), 0, 0)
     USER_FUNC(evt_mario::evt_mario_key_on)
     END_IF()
+    END_IF()
+    IF_EQUAL(LSWF(6), 1)
+    SET(LSWF(6), 0)
+    USER_FUNC(evt_mario::evt_mario_key_off, 1)
+    USER_FUNC(evt_msg::evt_msg_print, 1, PTR(holoEnemyIntro), 0, 0)
+    USER_FUNC(evt_mario::evt_mario_key_on)
+    END_IF()
+    IF_EQUAL(LSWF(7), 1)
+    SET(LSWF(7), 0)
+    USER_FUNC(evt_mario::evt_mario_key_off, 1)
+    USER_FUNC(evt_msg::evt_msg_print, 1, PTR(negativeEnemyIntro), 0, 0)
+    USER_FUNC(evt_mario::evt_mario_key_on)
     END_IF()
     USER_FUNC(evt_dan_disorder_set_or_clear, LW(5))
     IF_NOT_EQUAL(LW(5), -1)

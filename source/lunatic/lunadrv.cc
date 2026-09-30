@@ -103,25 +103,25 @@ namespace mod {
             wp->marioHpMult = 0.1;
             wp->enemyDamageIncrease = 1;
             wp->marioDamageDecrease = 0;
-            wp->enemyMaxHPMult = 1.25;
+            wp->enemyMaxHPMult = 1.1;
             wp->dispMaxHPDecrease = 10;
-            wp->dispEnemyHPIncrease = 0;
+            wp->dispEnemyHPIncrease = 10;
             break;
         case 1:
             wp->marioHpMult = 0.2;
-            wp->enemyDamageIncrease = 2;
+            wp->enemyDamageIncrease = 1;
             wp->marioDamageDecrease = 1;
-            wp->enemyMaxHPMult = 1.5;
+            wp->enemyMaxHPMult = 1.2;
             wp->dispMaxHPDecrease = 20;
             wp->dispEnemyHPIncrease = 20;
             break;
         case 2:
-            wp->marioHpMult = 0.33;
+            wp->marioHpMult = 0.3;
             wp->enemyDamageIncrease = 2;
             wp->marioDamageDecrease = 1;
-            wp->enemyMaxHPMult = 1.75;
-            wp->dispMaxHPDecrease = 33;
-            wp->dispEnemyHPIncrease = 50;
+            wp->enemyMaxHPMult = 1.3;
+            wp->dispMaxHPDecrease = 30;
+            wp->dispEnemyHPIncrease = 30;
             break;
         default:
             wp->marioHpMult = 0.5;
@@ -175,23 +175,23 @@ namespace mod {
         s32 difficulty = lpGetDifficulty();
         switch (difficulty) {
         case 0:
-            wp->dispInstantCoinLoss = 10;
+            wp->dispInstantCoinLoss = 4;
             wp->coinLossChance = 30;
             break;
         case 1:
-            wp->dispInstantCoinLoss = 15;
+            wp->dispInstantCoinLoss = 8;
             wp->coinLossChance = 50;
             break;
         case 2:
-            wp->dispInstantCoinLoss = 20;
+            wp->dispInstantCoinLoss = 12;
             wp->coinLossChance = 70;
             break;
         default:
-            wp->dispInstantCoinLoss = 25;
+            wp->dispInstantCoinLoss = 16;
             wp->coinLossChance = 100;
             break;
         }
-        wp->coinThreshold = (s32)(msl::math::floor((f32)pouch->coins * 0.15) + 1);
+        wp->coinThreshold = (s32)(msl::math::floor((f32)pouch->coins * 0.2) + 1);
         return;
     }
 
@@ -233,9 +233,9 @@ namespace mod {
         return;
     }
 
-    s32 indiffItems[] = {ITEM_ID_USE_OBAKE_KINOKO, ITEM_ID_USE_DOKU_KINOKO, ITEM_ID_USE_DOKU_KINOKO, ITEM_ID_COOK_NURU_ESSENCE, ITEM_ID_COOK_BOMB_EGG,
-                         ITEM_ID_COOK_BOMB_EGG, ITEM_ID_COOK_TRIAL_PAN, ITEM_ID_COOK_DANGEROUS_COOKING, ITEM_ID_COOK_NORMAL_CHOKO, ITEM_ID_COOK_NORMAL_CHOKO,
-                         ITEM_ID_COOK_GERORIN_FOOD, ITEM_ID_COOK_GERORIN_FOOD};
+    s32 indiffItems[] = {ITEM_ID_USE_OBAKE_KINOKO, ITEM_ID_USE_DOKU_KINOKO, ITEM_ID_USE_DOKU_KINOKO, ITEM_ID_USE_DOKU_KINOKO, ITEM_ID_COOK_NURU_ESSENCE, ITEM_ID_COOK_BOMB_EGG,
+                         ITEM_ID_COOK_BOMB_EGG, ITEM_ID_COOK_TRIAL_PAN, ITEM_ID_COOK_TRIAL_PAN, ITEM_ID_COOK_DANGEROUS_COOKING, ITEM_ID_COOK_DANGEROUS_COOKING, ITEM_ID_COOK_NORMAL_CHOKO,
+                         ITEM_ID_COOK_NORMAL_CHOKO, ITEM_ID_COOK_NORMAL_CHOKO, ITEM_ID_COOK_GERORIN_FOOD, ITEM_ID_COOK_GERORIN_FOOD, ITEM_ID_COOK_GERORIN_FOOD};
 
     s32 IndifferenceAction(evtmgr::EvtEntry * evtEntry, bool firstRun) {
         (void)firstRun;
@@ -674,7 +674,7 @@ namespace mod {
             return 2;
         }
         s32 gswf = 1680 + id;
-        const char * msg = (const char *)0;
+        const char * msg = nullptr;
         if (swdrv::swGet(gswf) == false) {
             msg = Disorders[id - 1].introMsg;
             swdrv::swSet(gswf);

@@ -428,8 +428,8 @@ namespace mod {
 
     void ThunderVoucherTear() {
         VoucherWork * Voucher = VoucherItemIdToPtr(VOUCHER_THUNDER);
-        lpAddAtk(-(round(Voucher->UW.Thunder->atkBonus / 2)) + 1);
-        lpAddCrit(-(round((f32)Voucher->UW.Thunder->critRateBonus / 2)) + 2, -(msl::math::floor(Voucher->UW.Thunder->critMultBonus / 2.0f)) + 8.0f);
+        lpAddAtk(-(round((f32)(Voucher->UW.Thunder->atkBonus) / 2.0f)) + 1);
+        lpAddCrit(-(round((f32)Voucher->UW.Thunder->critRateBonus / 2.0f)) + 2, -(msl::math::floor(Voucher->UW.Thunder->critMultBonus / 2.0f)) + 8.0f);
         return;
     }
 

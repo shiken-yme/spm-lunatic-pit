@@ -111,9 +111,8 @@ namespace mod::customwin {
             return;
         }
         CWInitBlockRerun = true;
-        GlobalCW = (CustomWinWork *)memory::__memAlloc(0, sizeof(CustomWinWork));
-        CWDebug_GetMainHeapFreeSpace(true);
-        msl::string::memset(GlobalCW, 0, sizeof(*GlobalCW));
+        GlobalCW = (CustomWinWork *)memory::__memAlloc(memory::HEAP_MAIN, sizeof(CustomWinWork));
+        msl::string::memset(GlobalCW, 0, sizeof(CustomWinWork));
         wii::os::OSReport("CustomWin::CWInit: GlobalCW has been allocated; GlobalCW is located at %p\n", GlobalCW);
 
         // Select
@@ -124,6 +123,13 @@ namespace mod::customwin {
         // Msg
         GlobalCW->activeMsgGX = -1;
         return;
+    }
+
+    char * CWReallocString(const char * str) {
+        char * newstr = (char *)memory::__memAlloc(memory::HEAP_MAIN, msl::string::strlen(str) + 1);
+        msl::string::memset(newstr, 0, msl::string::strlen(str) + 1);
+        msl::string::strcpy(newstr, str);
+        return newstr;
     }
 
     /* --------------------------------------------------------------------------------------
@@ -160,7 +166,7 @@ namespace mod::customwin {
     */
     s32 CWSelectKeyToId(const char * key) {
         for (u32 i = 0; i < CWSELECT_ENTRY_MAX; i += 1) {
-            if (msl::string::strcmp("", GlobalCW->SelectKeys[i].name) != 0) {
+            if (GlobalCW->SelectKeys[i].name != nullptr) {
                 if (msl::string::strcmp(GlobalCW->SelectKeys[i].name, key) == 0)
                     return i;
             }
@@ -180,23 +186,34 @@ namespace mod::customwin {
             return;
         }
         if (GlobalCW->Select[id]->type == CWSELECT_INFOGRAPHIC) {
-            s32 i;
-            for (i = 0; i < CWSELECT_PAGE_MAX; i += 1) {
+            for (s32 i = 0; i < CWSELECT_PAGE_MAX; i += 1) {
                 msl::string::memset(GlobalCW->Select[id]->Info.Pages[i].Descs, 0, (GlobalCW->Select[id]->Info.Pages[i].num * sizeof(CWSelectItemDesc)));
-                memory::__memFree(0, GlobalCW->Select[id]->Info.Pages[i].Descs);
-                CWDebug_GetMainHeapFreeSpace(false);
+                memory::__memFree(memory::HEAP_MAIN, GlobalCW->Select[id]->Info.Pages[i].Descs);
                 msl::string::memset(&GlobalCW->Select[id]->Info.Pages[i], 0, (GlobalCW->Select[id]->Info.Pages[i].num * sizeof(CWSelectPageDef)));
-                memory::__memFree(0, &GlobalCW->Select[id]->Info.Pages[i]);
-                CWDebug_GetMainHeapFreeSpace(false);
+                memory::__memFree(memory::HEAP_MAIN, &GlobalCW->Select[id]->Info.Pages[i]);
             }
         }
-        msl::string::memset(GlobalCW->SelectKeys[id].name, 0, CWKEY_NAME_LENGTH);
+        if (GlobalCW->Select[id]->windowTitle != nullptr)
+            memory::__memFree(memory::HEAP_MAIN, GlobalCW->Select[id]->windowTitle);
+        if (GlobalCW->Select[id]->windowSelect != nullptr)
+            memory::__memFree(memory::HEAP_MAIN, GlobalCW->Select[id]->windowSelect);
+        if (GlobalCW->Select[id]->Sfx.closeSfx != nullptr)
+            memory::__memFree(memory::HEAP_MAIN, GlobalCW->Select[id]->Sfx.closeSfx);
+        for (u32 i = 0; i < GlobalCW->Select[id]->resetNum; i += 1) {
+            if (GlobalCW->Select[id]->Descs[i].deallocStrings) {
+                if (GlobalCW->Select[id]->Descs[i].nameTxt != nullptr)
+                    memory::__memFree(memory::HEAP_MAIN, GlobalCW->Select[id]->Descs[i].nameTxt);
+                if (GlobalCW->Select[id]->Descs[i].descTxt != nullptr)
+                    memory::__memFree(memory::HEAP_MAIN, GlobalCW->Select[id]->Descs[i].descTxt);
+            }
+        }
+        memory::__memFree(memory::HEAP_MAIN, GlobalCW->SelectKeys[id].name);
+        GlobalCW->SelectKeys[id].name = nullptr;
+        GlobalCW->SelectKeys[id].id = -1;
         msl::string::memset(GlobalCW->Select[id]->Descs, 0, (GlobalCW->Select[id]->num * sizeof(CWSelectItemDesc)));
-        memory::__memFree(0, GlobalCW->Select[id]->Descs);
-        CWDebug_GetMainHeapFreeSpace(false);
+        memory::__memFree(memory::HEAP_MAIN, GlobalCW->Select[id]->Descs);
         msl::string::memset(GlobalCW->Select[id], 0, sizeof(CWSelect));
-        memory::__memFree(0, GlobalCW->Select[id]);
-        CWDebug_GetMainHeapFreeSpace(false);
+        memory::__memFree(memory::HEAP_MAIN, GlobalCW->Select[id]);
         GlobalCW->Select[id] = nullptr;
         CWDEBUG_OSREPORT_FMT("CustomWin::CWSelectDelete: Entry with key \'%s\' has been removed.\n", key);
         return;
@@ -215,18 +232,16 @@ namespace mod::customwin {
         Creates a CustomWin select entry
     */
     CWSelect * CWSelectEntry(const char * key, CWSelectType type, bool setActive) {
-        if (msl::string::strlen(key) > CWKEY_NAME_LENGTH) {
+        /*if (msl::string::strlen(key) > CWKEY_NAME_LENGTH) {
             CWDEBUG_OSREPORT_FMT("CustomWin::CWSelectEntry: Key \'%s\' is longer than CWKEY_NAME_LENGTH (%d). Failed to create select entry.\n", key, CWKEY_NAME_LENGTH);
-        }
+        }*/
         for (u32 i = 0; i < CWSELECT_ENTRY_MAX; i += 1) {
             if (GlobalCW->Select[i] == nullptr) {
-                GlobalCW->Select[i] = (CWSelect *)memory::__memAlloc(0, sizeof(CWSelect));
-                CWDebug_GetMainHeapFreeSpace(true);
+                GlobalCW->Select[i] = (CWSelect *)memory::__memAlloc(memory::HEAP_MAIN, sizeof(CWSelect));
                 msl::string::memset(GlobalCW->Select[i], 0, sizeof(CWSelect));
                 GlobalCW->SelectKeys[i].id = i;
                 GlobalCW->Select[i]->type = type;
-                msl::string::memset(GlobalCW->SelectKeys[i].name, 0, sizeof(GlobalCW->SelectKeys[i].name));
-                msl::string::memcpy(GlobalCW->SelectKeys[i].name, key, msl::string::strlen(key));
+                GlobalCW->SelectKeys[i].name = CWReallocString(key);
                 if (setActive) {
                     GlobalCW->activeSelect = i;
                     CWDEBUG_OSREPORT_FMT("CustomWin::CWSelectEntry: New select entry with key \'%s\' (GlobalCW->Select[%d]) created. Set as active select menu.\n", key, i);
@@ -258,21 +273,12 @@ namespace mod::customwin {
         if (id != -1)
             CWSelectDelete(key);
         CWSelect * entry = CWSelectEntry(key, type, false);
-        if (title != nullptr) {
-            if (msl::string::strlen(title) < CWSELECT_NAME_TXT_LENGTH) {
-                msl::string::memcpy(entry->windowTitle, title, msl::string::strlen(title));
-            } else
-                msl::string::memcpy(entry->windowTitle, title, CWSELECT_NAME_TXT_LENGTH);
-        }
-        if (select != nullptr) {
-            if (msl::string::strlen(title) < CWSELECT_DESC_TXT_LENGTH) {
-                msl::string::memcpy(entry->windowSelect, select, msl::string::strlen(select));
-            } else
-                msl::string::memcpy(entry->windowSelect, select, CWSELECT_DESC_TXT_LENGTH);
-        }
+        if (title != nullptr)
+            entry->windowTitle = CWReallocString(title);
+        if (select != nullptr)
+            entry->windowSelect = CWReallocString(select);
         // Establish listing descs in memory
-        entry->Descs = (CWSelectItemDesc *)memory::__memAlloc(0, sizeof(CWSelectItemDesc) * CWSELECT_DESC_MAX);
-        CWDebug_GetMainHeapFreeSpace(true);
+        entry->Descs = (CWSelectItemDesc *)memory::__memAlloc(memory::HEAP_MAIN, sizeof(CWSelectItemDesc) * CWSELECT_DESC_MAX);
         msl::string::memset(entry->Descs, 0, sizeof(CWSelectItemDesc) * CWSELECT_DESC_MAX);
         if (descs != nullptr) {
             msl::string::memcpy(entry->Descs, descs, sizeof(CWSelectItemDesc) * numDescs);
@@ -282,11 +288,10 @@ namespace mod::customwin {
         // Establish page defs if select is type Info
         if (type == CWSELECT_INFOGRAPHIC) {
             entry->Info.numPages = 1;
-            entry->Info.Pages = (CWSelectPageDef *)memory::__memAlloc(0, sizeof(CWSelectPageDef) * CWSELECT_PAGE_MAX);
-            CWDebug_GetMainHeapFreeSpace(true);
+            entry->Info.Pages = (CWSelectPageDef *)memory::__memAlloc(memory::HEAP_MAIN, sizeof(CWSelectPageDef) * CWSELECT_PAGE_MAX);
             msl::string::memset(entry->Info.Pages, 0, sizeof(CWSelectPageDef) * CWSELECT_PAGE_MAX);
-            msl::string::memcpy(entry->Info.Pages[0].windowTitle, title, msl::string::strlen(title));
-            msl::string::memcpy(entry->Info.Pages[0].windowSelect, select, msl::string::strlen(select));
+            entry->Info.Pages[0].windowTitle = entry->windowTitle;
+            entry->Info.Pages[0].windowSelect = entry->windowSelect;
         }
         return 2;
     }
@@ -319,8 +324,9 @@ namespace mod::customwin {
         Entry->Descs[Entry->num].cost = cost;
         Entry->Descs[Entry->num].iconId = iconId;
         Entry->Descs[Entry->num].itemId = -1;
-        msl::string::memcpy(Entry->Descs[Entry->num].nameTxt, name, msl::string::strlen(name));
-        msl::string::memcpy(Entry->Descs[Entry->num].descTxt, desc, msl::string::strlen(desc));
+        Entry->Descs[Entry->num].nameTxt = CWReallocString(name);
+        Entry->Descs[Entry->num].descTxt = CWReallocString(desc);
+        Entry->Descs[Entry->num].deallocStrings = true;
         Entry->Descs[Entry->num].nameColor = *color;
         Entry->Descs[Entry->num].page = page;
         Entry->num += 1;
@@ -419,22 +425,16 @@ namespace mod::customwin {
         CWSelect * Entry = GlobalCW->Select[id];
         if ((s32)openSfxName == -1)
             Entry->Sfx.muteOpenSfx = true;
-        else if (openSfxName != nullptr && (s32)openSfxName != EVT_NULLPTR) {
-            msl::string::memset(Entry->Sfx.openSfx, 0, sizeof(Entry->Sfx.openSfx));
-            msl::string::memcpy(Entry->Sfx.openSfx, openSfxName, msl::string::strlen(openSfxName));
-        }
+        else if (openSfxName != nullptr && (s32)openSfxName != EVT_NULLPTR)
+            Entry->Sfx.openSfx = CWReallocString(openSfxName);
         if ((s32)closeSfxName == -1)
             Entry->Sfx.muteCloseSfx = true;
-        else if (closeSfxName != nullptr && (s32)closeSfxName != EVT_NULLPTR) {
-            msl::string::memset(Entry->Sfx.closeSfx, 0, sizeof(Entry->Sfx.closeSfx));
-            msl::string::memcpy(Entry->Sfx.closeSfx, closeSfxName, msl::string::strlen(closeSfxName));
-        }
+        else if (closeSfxName != nullptr && (s32)closeSfxName != EVT_NULLPTR)
+            Entry->Sfx.closeSfx = CWReallocString(closeSfxName);
         if ((s32)decideSfxName == -1)
             Entry->Sfx.muteDecideSfx = true;
-        else if (decideSfxName != nullptr && (s32)decideSfxName != EVT_NULLPTR) {
-            msl::string::memset(Entry->Sfx.decideSfx, 0, sizeof(Entry->Sfx.decideSfx));
-            msl::string::memcpy(Entry->Sfx.decideSfx, decideSfxName, msl::string::strlen(decideSfxName));
-        }
+        else if (decideSfxName != nullptr && (s32)decideSfxName != EVT_NULLPTR)
+            Entry->Sfx.decideSfx = CWReallocString(decideSfxName);
         return 2;
     }
 
@@ -519,14 +519,10 @@ namespace mod::customwin {
         }
         CWSelect * entry = GlobalCW->Select[id];
         entry->Info.numPages += 1;
-        if (pageName != nullptr) {
-            msl::string::memcpy(entry->Info.Pages[entry->Info.numPages - 1].windowTitle, pageName, msl::string::strlen(pageName));
-        } else
-            msl::string::memcpy(entry->Info.Pages[entry->Info.numPages - 1].windowTitle, entry->windowTitle, msl::string::strlen(entry->windowTitle));
-        if (pageDesc != nullptr) {
-            msl::string::memcpy(entry->Info.Pages[entry->Info.numPages - 1].windowSelect, pageDesc, msl::string::strlen(pageDesc));
-        } else
-            msl::string::memcpy(entry->Info.Pages[entry->Info.numPages - 1].windowSelect, entry->windowSelect, msl::string::strlen(entry->windowSelect));
+        if (pageName != nullptr)
+            entry->Info.Pages[entry->Info.numPages - 1].windowTitle = CWReallocString(pageName);
+        if (pageDesc != nullptr)
+            entry->Info.Pages[entry->Info.numPages - 1].windowSelect = CWReallocString(pageDesc);
         return 2;
     }
 
@@ -695,9 +691,10 @@ namespace mod::customwin {
                 j = 0;
             }
             CWSelectGetActiveEntry()->itemTable[i] = -1;
-            if (msl::string::strcmp("", CWSelectGetActiveEntry()->windowTitle) != 0)
+            msl::string::memcpy(CWSelectGetActiveEntry()->resetItemTable, CWSelectGetActiveEntry()->itemTable, sizeof(CWSelectGetActiveEntry()->itemTable));
+            if (CWSelectGetActiveEntry()->windowTitle != nullptr)
                 msgpatch::msgpatchAddEntry(GlobalCW->selectWinTitleMsgId, CWSelectGetActiveEntry()->windowTitle, 1);
-            if (msl::string::strcmp("", CWSelectGetActiveEntry()->windowSelect) != 0)
+            if (CWSelectGetActiveEntry()->windowSelect != nullptr)
                 msgpatch::msgpatchAddEntry(GlobalCW->selectWinSelectMsgId, CWSelectGetActiveEntry()->windowSelect, 1);
             // Reset colorize timer just in case
             CWSelectGetActiveEntry()->Colorize.timer = 0;
@@ -727,7 +724,7 @@ namespace mod::customwin {
             }
             // Init pre-menu appear effects
             if (!CWSelectGetActiveEntry()->Sfx.muteOpenSfx) {
-                if (msl::string::strcmp(CWSelectGetActiveEntry()->Sfx.openSfx, "") == 0)
+                if (CWSelectGetActiveEntry()->Sfx.openSfx == nullptr)
                     spmario_snd::spsndSFXOn("SFX_SYS_MENU_OPEN1");
                 else
                     spmario_snd::spsndSFXOn(CWSelectGetActiveEntry()->Sfx.openSfx);
@@ -885,13 +882,13 @@ namespace mod::customwin {
         for (i = 0; i < GlobalCW->Select[id]->resetNum; i += 1) {
             // Clear msgpatches only if type is not item
             if (GlobalCW->Select[id]->Descs[i].itemId < 1) {
-                msgpatch::msgpatchDelEntry(item_data::itemDataTable[GlobalCW->Select[id]->itemTable[i]].nameMsg);
-                msgpatch::msgpatchDelEntry(item_data::itemDataTable[GlobalCW->Select[id]->itemTable[i]].descMsg);
+                msgpatch::msgpatchDelEntry(item_data::itemDataTable[GlobalCW->Select[id]->resetItemTable[i]].nameMsg);
+                msgpatch::msgpatchDelEntry(item_data::itemDataTable[GlobalCW->Select[id]->resetItemTable[i]].descMsg);
             }
         }
-        if (GlobalCW->Select[id]->windowSelect[0] != 0)
+        if (GlobalCW->Select[id]->windowSelect != nullptr)
             msgpatch::msgpatchDelEntry(GlobalCW->selectWinSelectMsgId);
-        if (GlobalCW->Select[id]->windowTitle[0] != 0)
+        if (GlobalCW->Select[id]->windowTitle != nullptr)
             msgpatch::msgpatchDelEntry(GlobalCW->selectWinTitleMsgId);
         GlobalCW->activeSelect = -1;
         CWDEBUG_OSREPORT("CustomWin::EvtCWSelectReset: All live CWSelect message patches have been reset.\n");
@@ -1342,9 +1339,9 @@ namespace mod::customwin {
         // Reapply title/select msgpatches
         msgpatch::msgpatchDelEntry(GlobalCW->selectWinTitleMsgId);
         msgpatch::msgpatchDelEntry(GlobalCW->selectWinSelectMsgId);
-        if (Page->windowTitle[0] != 0)
+        if (Page->windowTitle != nullptr)
             msgpatch::msgpatchAddEntry(GlobalCW->selectWinTitleMsgId, Page->windowTitle, true);
-        if (Page->windowSelect[0] != 0)
+        if (Page->windowSelect != nullptr)
             msgpatch::msgpatchAddEntry(GlobalCW->selectWinSelectMsgId, Page->windowSelect, true);
         return;
     }
@@ -1353,8 +1350,7 @@ namespace mod::customwin {
         u8 i, num, page;
         // Allocate Descs to memory for numPages
         for (i = 0; i < Entry->Info.numPages; i += 1) {
-            Entry->Info.Pages[i].Descs = (CWSelectItemDesc *)memory::__memAlloc(0, sizeof(CWSelectItemDesc) * Entry->num);
-            CWDebug_GetMainHeapFreeSpace(true);
+            Entry->Info.Pages[i].Descs = (CWSelectItemDesc *)memory::__memAlloc(memory::HEAP_MAIN, sizeof(CWSelectItemDesc) * Entry->num);
             msl::string::memset(Entry->Info.Pages[i].Descs, 0, sizeof(CWSelectItemDesc) * Entry->num);
         }
         // For each listing desc's page definition, copy that item's desc to its respective page descs
@@ -1430,13 +1426,13 @@ namespace mod::customwin {
                 {
                     select->flag4 |= 0x2000;
                     if (!CWSelectGetActiveEntry()->Sfx.muteCloseSfx) {
-                        if (msl::string::strcmp(CWSelectGetActiveEntry()->Sfx.closeSfx, "") == 0)
+                        if (CWSelectGetActiveEntry()->Sfx.closeSfx == nullptr)
                             spmario_snd::spsndSFXOn("SFX_SYS_SELECT_NG1");
                         else
                             spmario_snd::spsndSFXOn(CWSelectGetActiveEntry()->Sfx.closeSfx);
                     }
                 } else if (!CWSelectGetActiveEntry()->Sfx.muteDecideSfx) {
-                    if (msl::string::strcmp(CWSelectGetActiveEntry()->Sfx.decideSfx, "") == 0)
+                    if (CWSelectGetActiveEntry()->Sfx.decideSfx == nullptr)
                         spmario_snd::spsndSFXOn("SFX_SYS_MENU_DESIDE1");
                     else
                         spmario_snd::spsndSFXOn(CWSelectGetActiveEntry()->Sfx.decideSfx);
@@ -1481,7 +1477,7 @@ namespace mod::customwin {
             break;
         case 2:
             if ((select->flag4 & 0x2000) != 0 && !CWSelectGetActiveEntry()->Sfx.muteCloseSfx) {
-                if (msl::string::strcmp(CWSelectGetActiveEntry()->Sfx.closeSfx, "") == 0)
+                if (CWSelectGetActiveEntry()->Sfx.closeSfx == nullptr)
                     spmario_snd::spsndSFXOn("SFX_SYS_MENU_CLOSE1");
                 else
                     spmario_snd::spsndSFXOn(CWSelectGetActiveEntry()->Sfx.closeSfx);
@@ -1679,21 +1675,19 @@ namespace mod::customwin {
     }
 
     CWMsgGX * CWMsgEntry(const char * key, s32 type, wii::tpl::TPLHeader * tpl, bool animate, bool setActive) {
-        if (msl::string::strlen(key) > CWKEY_NAME_LENGTH) {
+        /*if (msl::string::strlen(key) > CWKEY_NAME_LENGTH) {
             CWDEBUG_OSREPORT_FMT("CustomWin::CWMsgEntry: Key \'%s\' is longer than CWKEY_NAME_LENGTH (%d). Failed to create select entry.\n", key, CWKEY_NAME_LENGTH);
             return nullptr;
-        }
+        }*/
         for (u32 i = 0; i < CWMSG_ENTRY_MAX; i += 1) {
             if (GlobalCW->MsgGX[i] == nullptr) {
-                GlobalCW->MsgGX[i] = (CWMsgGX *)memory::__memAlloc(0, sizeof(CWMsgGX));
-                CWDebug_GetMainHeapFreeSpace(true);
+                GlobalCW->MsgGX[i] = (CWMsgGX *)memory::__memAlloc(memory::HEAP_MAIN, sizeof(CWMsgGX));
                 msl::string::memset(GlobalCW->MsgGX[i], 0, sizeof(CWMsgGX));
                 GlobalCW->MsgKeys[i].id = i;
                 GlobalCW->MsgGX[i]->type = type;
                 GlobalCW->MsgGX[i]->tpl = tpl;
                 GlobalCW->MsgGX[i]->animate = animate;
-                msl::string::memset(GlobalCW->MsgKeys[i].name, 0, sizeof(GlobalCW->MsgKeys[i].name));
-                msl::string::memcpy(GlobalCW->MsgKeys[i].name, key, msl::string::strlen(key));
+                GlobalCW->MsgKeys[i].name = CWReallocString(key);
                 if (setActive) {
                     GlobalCW->activeMsgGX = i;
                     CWDEBUG_OSREPORT_FMT("CustomWin::CWMsgEntry: New msg entry with key \'%s\' (GlobalCW->MsgGX[%d]) created. Set as active msg entry.\n", key, i);

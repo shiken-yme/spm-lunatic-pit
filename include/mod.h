@@ -9,7 +9,7 @@
 #include <rfcdrv.h>
 
 namespace mod {
-#define MOD_VERSION "SPM Lunatic Pit beta v3.0 PR6.9" // Make sure this never exceeds 48 characters for any reason lol
+#define MOD_VERSION "SPM Lunatic Pit beta v3.0" // Make sure this never exceeds 48 characters
 
     enum BlessId : s32 {
         /* 0x0 */ MERLUNA_NULL_BLESS,

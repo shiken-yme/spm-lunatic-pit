@@ -400,6 +400,7 @@
 
 // evtmgr_cmd.c
 // text
+800dcae8:evt_user_func
 800da0d4:evt_lbl
 800dd0b8:evt_inline_evt
 800ddd5c:evtmgrCmd
@@ -909,6 +910,8 @@
 
 // mot_fairy_mario.c
 8016c0ac:fairySpindashUseFunc
+8016571c:mot_fleep
+80166504:mot_fleep_post
 8016c0b4:mot_spindash
 8016c568:mot_spindash_post
 8016ece4:func_8016ece4
@@ -940,6 +943,9 @@
 // mot_jump.c
 801750fc:motJumpNpcPlaySfx
 80174fec:motJumpPlaySfx
+
+// mot_hit.c
+80175bcc:mot_hit
 
 // mot_slit.c
 80176a10:func_80176a10

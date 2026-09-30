@@ -89,6 +89,7 @@
 #include <spm/mobjdrv.h>
 #include <spm/mot_damage.h>
 #include <spm/mot_fairy_mario.h>
+#include <spm/mot_hit.h>
 #include <spm/msgdrv.h>
 #include <spm/npc_dimeen_l.h>
 #include <spm/npc_ninja.h>
@@ -503,11 +504,17 @@ namespace mod {
 
         npcHandleHitXp = patch::hookFunction(temp_unk::npcHandleHitXp, [](mario::MarioWork * marioWork, npcdrv::NPCEntry * npcEntry, s32 killXp, s32 unk_variant) {
             s32 disorderId = Lunatic->Luna.disorder;
+            // Shells no longer stack XP from hitting/killing enemies, and no longer give XP when kicked. Exception made for shell-on-shell collisions
+            if (!(npcEntry->attackedDamageType == 5 && npcEntry->lastAttackedDamageType == 0 && npcEntry->moveMode == 3 && npcEntry->templateKouraKickScript != nullptr)) {
+                if (npcEntry->attackedDamageType == 5 || (npcEntry->attackedDamageType == 0 && npcEntry->moveMode == 2 && npcEntry->templateKouraKickScript != nullptr)) {
+                    killXp = 0;
+                }
+            }
             if (disorderId == DisorderId::DISORDER_ORANGE) // If Dread is active, disable XP
                 killXp = 0;
             if (npcCheckDanFlag(npcEntry, DAN_NPC_CHILD) == true) // If child npc, give 10% XP
                 killXp /= 10;
-            if (disorderId == DisorderId::DISORDER_CYAN && killXp > 0 && npcEntry->attackedDamageType == 2) // If Recalcitrance is active & enemy was defeated with a jump, multiply XP negatively
+            if (disorderId == DisorderId::DISORDER_CYAN && killXp > 0) // If Recalcitrance is active & enemy was defeated with a jump, multiply XP negatively
                 killXp *= ((f32)Lunatic->Luna.DW.UW.Recalcitrance.dispXPMult / 100.0f);
             if (npcCheckDanFlag(npcEntry, DAN_NPC_HOLOGRAPHIC) == true)
                 killXp *= 2; //  Holographic enemies in the Pit will give 2x score
@@ -1034,8 +1041,8 @@ namespace mod {
         return;
     }
 
-    // I hate how I had to do this; the ASM context for deciding big or small coins in vanilla is very complex. (It's also region-dependent. Fun.)
-    #if defined(SPM_EU0) || defined(SPM_EU1)
+// I hate how I had to do this; the ASM context for deciding big or small coins in vanilla is very complex. (It's also region-dependent. Fun.)
+#if defined(SPM_EU0) || defined(SPM_EU1)
     void makeCoinsBig(s32 null, s32 itemId) {
         asm("addi 27, 3, 14");
         asm("mr 4, 30");
@@ -1046,7 +1053,7 @@ namespace mod {
         }
         return;
     }
-    #else
+#else
     void makeCoinsBig(s32 null, s32 itemId) {
         asm("addi 28, 3, 14");
         asm("mr 4, 30");
@@ -1057,7 +1064,7 @@ namespace mod {
         }
         return;
     }
-    #endif
+#endif
 
     void danResetLunatic() {
         mario_pouch::MarioPouchWork * pouch = mario_pouch::pouchGetPtr();
@@ -1469,12 +1476,12 @@ namespace mod {
         writeBranchLink(npcdrv::npcTakeDamage, 0xC9C, stylish_10);
         // cudge patch - thanks lily!
         writeBranch(npcdrv::npcTakeDamage, 0x1DC, setCudgeFloat);
-        // make coins big justice i guess
-        #if defined(SPM_EU0) || defined(SPM_EU1)
+// make coins big justice i guess
+#if defined(SPM_EU0) || defined(SPM_EU1)
         writeBranchLink(npcmisc::npcDropItem, 0x320, makeCoinsBig);
-        #else
+#else
         writeBranchLink(npcmisc::npcDropItem, 0x2B4, makeCoinsBig);
-        #endif
+#endif
         // patch title screen
         writeBranchLink(temp_unk::func_802f2860, 0x38, patchTitle);
         // add mod version check to save load
@@ -1493,6 +1500,10 @@ namespace mod {
 // Reverse-patch late revisions to allow more lock interactions (Surprisingly, US1 didn't introduce this!)
 #if defined(SPM_EU0) || defined(SPM_EU1) || defined(SPM_US2)
         writeWord(evt_mobj::mobj_zyo, 0x54, BNE(0x44));
+#endif
+// Reverse-patch FLCs back into the game
+#if defined(SPM_EU0) || defined(SPM_EU1)
+        writeWord(mot_fairy_mario::mot_fleep, 0x108, NOP);
 #endif
     }
 
@@ -3678,6 +3689,8 @@ namespace mod {
             if (swdrv::swGet(1690 + i) == true)
                 continue;
             s32 itemId = i + ARTIFACT_SOUL;
+            ArtifactDefs[n].nameTxt = (char *)memory::__memAlloc(memory::HEAP_MAP, 32);
+            ArtifactDefs[n].descTxt = (char *)memory::__memAlloc(memory::HEAP_MAP, 300);
             msl::string::memcpy(ArtifactDefs[n].nameTxt, RFC_SpecialItems[itemId].name, msl::string::strlen(RFC_SpecialItems[itemId].name));
             msl::string::memcpy(ArtifactDefs[n].descTxt, RFC_SpecialItems[itemId].description, msl::string::strlen(RFC_SpecialItems[itemId].description));
             ArtifactDefs[n].nameColor = RFC_SpecialItems[itemId].textDrawCol;
@@ -4393,7 +4406,6 @@ namespace mod {
             spmario_snd::spsndSFXOn("SFX_SYS_SELECT_NG1");
         } else {
             spmario_snd::spsndSFXOn("SFX_SYS_FILE_MOJI_SET1");
-            msl::string::memset(CWSelectGetActiveEntry()->Descs[0].nameTxt, 0, CWSELECT_NAME_TXT_LENGTH);
             msl::stdio::sprintf(CWSelectGetActiveEntry()->Descs[0].nameTxt, "Chest Keys (%d)", keys + 1);
             CWSelectGetActiveEntry()->Descs[0].cost = after_cost;
         }
@@ -4409,7 +4421,6 @@ namespace mod {
             spmario_snd::spsndSFXOn("SFX_SYS_SELECT_NG1");
         } else {
             spmario_snd::spsndSFXOn("SFX_SYS_FILE_MOJI_DELETE1");
-            msl::string::memset(CWSelectGetActiveEntry()->Descs[0].nameTxt, 0, CWSELECT_NAME_TXT_LENGTH);
             msl::stdio::sprintf(CWSelectGetActiveEntry()->Descs[0].nameTxt, "Chest Keys (%d)", keys - 1);
             CWSelectGetActiveEntry()->Descs[0].cost = after_cost;
         }
@@ -4669,6 +4680,8 @@ namespace mod {
             Item->iconId = TPLPATCH_ICON((s32)RFC_SpecialItems[itemId - RFC_SPECIAL_START].iconId);
             Item->cost = RFC_SpecialItems[itemId - RFC_SPECIAL_START].buyPrice;
             Item->nameColor = RFC_Colors[itemRarity].textCol;
+            Item->nameTxt = (char *)memory::__memAlloc(memory::HEAP_MAP, 32);
+            Item->descTxt = (char *)memory::__memAlloc(memory::HEAP_MAP, 300);
             msl::string::memcpy(Item->nameTxt, RFC_SpecialItems[itemId - RFC_SPECIAL_START].name, msl::string::strlen(RFC_SpecialItems[itemId - RFC_SPECIAL_START].name));
             if ((itemId - RFC_SPECIAL_START) >= VOUCHER_CAKE && (itemId - RFC_SPECIAL_START) <= VOUCHER_BLACK) // Check if voucher
                 msl::stdio::sprintf(Item->descTxt, RFC_SpecialItems[itemId - RFC_SPECIAL_START].description, VoucherGetTearChance(VoucherTearChances[itemId - RFC_SPECIAL_START]), VoucherGuaranteeTrigs[itemId - RFC_SPECIAL_START]);
@@ -4770,10 +4783,10 @@ namespace mod {
     USER_FUNC(evt_mario::evt_mario_set_pose, PTR("I_2"), 0)
     END_INLINE()
     WAIT_MSEC(1000)
-    IF_NOT_EQUAL(GSWF(1606), 1) // Voucher intro text not seen
+    IF_NOT_EQUAL(GSWF(1607), 1) // Voucher intro text not seen
     IF_LARGE_EQUAL(GW(6), (s32)VOUCHER_CAKE)
     IF_SMALL_EQUAL(GW(6), (s32)VOUCHER_BLACK)
-    SET(GSWF(1606), 1)
+    SET(GSWF(1607), 1)
     USER_FUNC(MsgIconReplaceIdx, 3, (s32)(TPLPATCH_ICON(ICON_B)))
     USER_FUNC(evt_msg::evt_msg_print, 1, PTR(voucherIntro), 0, 0)
     USER_FUNC(MsgIconReplaceIdx, 3, (s32)icondrv::ICON_BTN_1)
@@ -4902,10 +4915,10 @@ namespace mod {
     USER_FUNC(evt_mario::evt_mario_set_pose, PTR("I_2"), 0)
     END_INLINE()
     WAIT_MSEC(1500)
-    IF_NOT_EQUAL(GSWF(1606), 1) // Voucher intro text not seen
+    IF_NOT_EQUAL(GSWF(1607), 1) // Voucher intro text not seen
     IF_LARGE_EQUAL(LW(0), (s32)VOUCHER_CAKE)
     IF_SMALL_EQUAL(LW(0), (s32)VOUCHER_BLACK)
-    SET(GSWF(1606), 1)
+    SET(GSWF(1607), 1)
     USER_FUNC(MsgIconReplaceIdx, 3, (s32)(TPLPATCH_ICON(ICON_B)))
     USER_FUNC(evt_msg::evt_msg_print, 1, PTR(voucherIntro), 0, 0)
     USER_FUNC(MsgIconReplaceIdx, 3, (s32)icondrv::ICON_BTN_1)
@@ -5486,7 +5499,7 @@ namespace mod {
     USER_FUNC(RFCGenerate, PTR(new_dan_chest_interact_evt), PTR(new_dan_chest_open_evt))
     // Handle Whacka replacing the chest
     IF_NOT_EQUAL(GSW(22), 8) // If Whacka has not been brutally murdered in vanilla
-    IF_EQUAL(GSWF(1612), 0) // Whacka NOT disabled
+    IF_EQUAL(GSWF(1612), 0)  // Whacka NOT disabled
     USER_FUNC(evt_sub::evt_sub_random, 100, LW(0))
     IF_SMALL_EQUAL(LW(0), 4) // 5% chance to replace chest with Whacka
     USER_FUNC(evt_mobj::evt_mobj_delete, PTR(rfcChestName))
@@ -5682,36 +5695,36 @@ namespace mod {
     USER_FUNC(evt_door::evt_door_set_dokan_descs, PTR(&new_dan_70_dokan_desc), 1)
     USER_FUNC(evt_lp_get_chest_keys, LW(7))
     IF_LARGE(LW(7), 0)
-        INLINE_EVT()
-            USER_FUNC(evt_door::evt_door_wait_flag, 256)
-            USER_FUNC(evt_mario::evt_mario_key_off, 1)
-            USER_FUNC(evt_sub::evt_sub_hud_configure, 0)
-            WAIT_MSEC(100)
-            SET(LW(6), 4)
-            USER_FUNC(evt_lp_get_difficulty, LW(5))
-            SUB(LW(6), LW(5))
-            SET(LW(10), LW(7))
-            MUL(LW(7), LW(6))
-            USER_FUNC(evt_pouch::evt_pouch_get_hp, LW(9))
-            USER_FUNC(evt_pouch::evt_pouch_get_max_hp, LW(8))
-            SUB(LW(8), LW(9))
-            CLAMP_INT(LW(7), 0, LW(8))
-            SET(LW(11), LW(10))
-            MUL(LW(11), -1)
-            USER_FUNC(evt_lp_add_chest_keys, LW(11))
-            USER_FUNC(evt_mario::evt_mario_set_pose, PTR("I_2"), 0)
-            USER_FUNC(evt_mario::evt_mario_get_pos, LW(3), LW(4), LW(5))
-            USER_FUNC(evt_mario::evt_mario_get_height, LW(2))
-            ADD(LW(4), LW(2))
-            USER_FUNC(evt_eff::evt_eff, 0, PTR("spm_recovery"), LW(3), LW(4), LW(5), LW(7), 0, 0, 0, 0, 0, 0, 0, 0)
-            USER_FUNC(evt_pouch::evt_pouch_add_hp, LW(7))
-            WAIT_MSEC(1500)
-            USER_FUNC(evt_sub::evt_sub_hud_configure, 2)
-            USER_FUNC(evt_msg::evt_msg_print_insert, 1, PTR(chestKeysToHp), 0, 0, LW(10), LW(7))
-            WAIT_MSEC(200)
-            USER_FUNC(evt_mario::evt_mario_set_pose, PTR("S_1"), 0)
-            USER_FUNC(evt_mario::evt_mario_key_on)
-        END_INLINE()
+    INLINE_EVT()
+    USER_FUNC(evt_door::evt_door_wait_flag, 256)
+    USER_FUNC(evt_mario::evt_mario_key_off, 1)
+    USER_FUNC(evt_sub::evt_sub_hud_configure, 0)
+    WAIT_MSEC(100)
+    SET(LW(6), 4)
+    USER_FUNC(evt_lp_get_difficulty, LW(5))
+    SUB(LW(6), LW(5))
+    SET(LW(10), LW(7))
+    MUL(LW(7), LW(6))
+    USER_FUNC(evt_pouch::evt_pouch_get_hp, LW(9))
+    USER_FUNC(evt_pouch::evt_pouch_get_max_hp, LW(8))
+    SUB(LW(8), LW(9))
+    CLAMP_INT(LW(7), 0, LW(8))
+    SET(LW(11), LW(10))
+    MUL(LW(11), -1)
+    USER_FUNC(evt_lp_add_chest_keys, LW(11))
+    USER_FUNC(evt_mario::evt_mario_set_pose, PTR("I_2"), 0)
+    USER_FUNC(evt_mario::evt_mario_get_pos, LW(3), LW(4), LW(5))
+    USER_FUNC(evt_mario::evt_mario_get_height, LW(2))
+    ADD(LW(4), LW(2))
+    USER_FUNC(evt_eff::evt_eff, 0, PTR("spm_recovery"), LW(3), LW(4), LW(5), LW(7), 0, 0, 0, 0, 0, 0, 0, 0)
+    USER_FUNC(evt_pouch::evt_pouch_add_hp, LW(7))
+    WAIT_MSEC(1500)
+    USER_FUNC(evt_sub::evt_sub_hud_configure, 2)
+    USER_FUNC(evt_msg::evt_msg_print_insert, 1, PTR(chestKeysToHp), 0, 0, LW(10), LW(7))
+    WAIT_MSEC(200)
+    USER_FUNC(evt_mario::evt_mario_set_pose, PTR("S_1"), 0)
+    USER_FUNC(evt_mario::evt_mario_key_on)
+    END_INLINE()
     END_IF()
     RETURN_FROM_CALL()
 
@@ -5853,14 +5866,14 @@ namespace mod {
     // FEATURES
     CASE_EQUAL(0)
     IF_EQUAL(GSWF(1604), 0)
-        IF_EQUAL(GSW(1622), 0) // Shadoo not defeated, but Features menu opened
-            USER_FUNC(evt_msg::evt_msg_print_add, 1, PTR(jimboWarn))
-            USER_FUNC(evt_msg::evt_msg_select, 1, PTR(yesNoSelect_NoByDefault))
-            IF_EQUAL(LW(0), 1)
-                SET(GW(0), -1)
-                SET(LW(1), -1)
-            END_IF()
-        END_IF()
+    IF_EQUAL(GSW(1622), 0) // Shadoo not defeated, but Features menu opened
+    USER_FUNC(evt_msg::evt_msg_print_add, 1, PTR(jimboWarn))
+    USER_FUNC(evt_msg::evt_msg_select, 1, PTR(yesNoSelect_NoByDefault))
+    IF_EQUAL(LW(0), 1)
+    SET(GW(0), -1)
+    SET(LW(1), -1)
+    END_IF()
+    END_IF()
     END_IF()
     IF_NOT_EQUAL(GW(0), -1)
     SET(GSWF(1604), 1)

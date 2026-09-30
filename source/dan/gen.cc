@@ -1169,8 +1169,10 @@ namespace mod {
             RFCColorDef * RFC_Colors = (RFCColorDef *)RFCColorsGetPtr();
             msl::string::memset(Desc, 0, sizeof(customwin::CWSelectItemDesc));
             if (itemId >= RFC_SPECIAL_START) {
+                Desc->nameTxt = (char *)memory::__memAlloc(memory::HEAP_MAP, 32);
+                Desc->descTxt = (char *)memory::__memAlloc(memory::HEAP_MAP, 300);
                 Desc->iconId = TPLPATCH_ICON((s32)RFC_SpecialItems[itemId - RFC_SPECIAL_START].iconId);
-                msl::string::memcpy(Desc->nameTxt, RFC_SpecialItems[itemId - RFC_SPECIAL_START].name, msl::string::strlen(RFC_SpecialItems[itemId - RFC_SPECIAL_START].name));
+                msl::string::strcpy(Desc->nameTxt, RFC_SpecialItems[itemId - RFC_SPECIAL_START].name);
                 if ((itemId - RFC_SPECIAL_START) >= VOUCHER_CAKE && (itemId - RFC_SPECIAL_START) <= VOUCHER_BLACK) // Check if voucher
                     msl::stdio::sprintf(Desc->descTxt, RFC_SpecialItems[itemId - RFC_SPECIAL_START].description, VoucherGetTearChance(VoucherTearChances[itemId - RFC_SPECIAL_START]), VoucherGuaranteeTrigs[itemId - RFC_SPECIAL_START]);
                 else

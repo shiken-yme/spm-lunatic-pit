@@ -113,7 +113,7 @@ namespace mod {
         "Modern Mix";
 
     const char nyMusicDesc[] =
-        "Lively and insert descriptor!\n"
+        "Lively and mesmerizing!\n"
         "Composed by Nilyoshi.\n" BRK
         "This theme gets more intense\n"
         "as you traverse the Pit.";
@@ -157,7 +157,7 @@ namespace mod {
         "Pit of 100 Beats";
 
     const char zkMusicDesc[] =
-        "Insert descriptors here!\n"
+        "Funky and hypnotic!\n"
         "Arranged by Zaku.";
 
     const char moverFeaturesName[] =
@@ -172,7 +172,7 @@ namespace mod {
 
     const char merlunaFeaturesDesc[] =
         "The esoteric purveyor of Divine\n"
-        "Judgement!... But not right now.\n";
+        "Judgement!... But not right now.";
 
     const char whackaFeaturesName[] =
         "Whacka";
@@ -246,7 +246,7 @@ namespace mod {
         "Options";
 
     const char chestText[] =
-        "<system>"
+        INIT_SYS
         "Open the %s Chest?\n"
         "<wait 300>You have <icon PAD_1 0.67 0 1 3>%d.\n"
         "<wait 300>Open: <icon PAD_1 0.67 0 1 3>%d    Reroll: <icon PAD_1 0.67 0 1 3>%d\n"
@@ -720,7 +720,7 @@ namespace mod {
 
     // Merluna & blessing/curse text
     const char houraiFirstUse[] =
-        "<system>"
+        INIT_SYS
         "Hourai Doll has taken effect!\n"
         "HP has been fully restored,\n"
         "but the Blessing has cleared.\n" BRK
@@ -734,7 +734,7 @@ namespace mod {
         "the Affliction has cleared.\n" END;
 
     const char houraiWearOff[] =
-        "<system>"
+        INIT_SYS
         "The temporary HP boost and\n"
         "Attack cut from Phoenix's\n"
         "Tail have now worn off.\n" END;
@@ -758,7 +758,7 @@ namespace mod {
     const char merlunaIntro[] =
         "<shake>Wah-hah-hah!</shake><wait 500> You've found\n"
         "me, the oh-so-wonderful...<wait 250> the\n"
-        "dearly accursed... <wait 250><wave>Merluna!</wave>\n" END;
+        "dearly accursed... <wait 250><wave>Merluna!\n</wave>" END;
 
     const char merlunaIntro2[] =
         "What am I doing here, you ask\n"
@@ -1076,7 +1076,7 @@ namespace mod {
         "Start from Postgame";
 
     const char quickstartText[] =
-        "<system>"
+        INIT_SYS
         "Do you want to quickstart\n"
         "the Lunatic Pit or create\n"
         "a new save file?\n" PROMPT;
@@ -1246,11 +1246,11 @@ namespace mod {
         "Mysterious Whacka Bump";
 
     const char bumpUseMsg[] =
-        "<system>"
+        INIT_SYS
         "Would you like to be blue?\n" PROMPT;
 
     const char bumpUnuseMsg[] =
-        "<system>"
+        INIT_SYS
         "Would you like to stop\n"
         "being blue?\n" PROMPT;
 
@@ -1418,7 +1418,13 @@ namespace mod {
     const char ruinDesc[] =
         "Disorder: Ruin\n"
         "\"Please... turn the lights back on...\"\n" BRK
-        "Placeholder\n";
+        "Hero... Why are you here...?\n"
+        "This is no place for a mortal.\n" BRK
+        "Please... leave me in this prison.\n"
+        "I must continue to atone here...\n" BRK
+        "I... just wish it wasn't so lonely.\n"
+        "All I want... is to see him again.\n" BRK
+        "I love you, Dimmy...\n";
 
     const char apathyIntro[] =
         "<system>A wave of uncertainty strikes\n"
@@ -1431,8 +1437,7 @@ namespace mod {
         "losing your motivation to\n"
         "forge on.\n" BRK
         "You're now bound by pure,\n"
-        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>apathy.\n"
-        "</shake><k>\n<p>\n"
+        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>apathy.\n</shake>\n" BRK
         "Your HP, CM, and CR have\n"
         "been decreased;<wait 200> enemy HP\n"
         "has been raised.\n" BRK
@@ -1452,8 +1457,7 @@ namespace mod {
         "unbearable chills down your\n"
         "spine.\n" BRK
         "You're now bound by pure,\n"
-        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>dread.\n"
-        "</shake><k>\n<p>\n"
+        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>dread.\n</shake>\n" BRK
         "Enemies will no longer drop\n"
         "coins, items, or XP.\n" BRK
         "Additionally, enemies may\n"
@@ -1476,8 +1480,7 @@ namespace mod {
         "one watching you may feel\n"
         "that very way towards you.\n" BRK
         "You're now bound by pure,\n"
-        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>prejudice.\n"
-        "</shake><k>\n<p>\n"
+        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>prejudice.\n</shake>\n" BRK
         "Coins will be lost upon\n"
         "entering a room and as\n"
         "time passes.\n" BRK
@@ -1500,8 +1503,7 @@ namespace mod {
         "sapped away as your grip on\n"
         "reality rapidly fades.\n" BRK
         "You're now bound by pure,\n"
-        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>indifference.\n"
-        "</shake><k>\n<p>\n"
+        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>indifference.\n</shake>\n" BRK
         "Some junk items will be\n"
         "forced into your inventory\n"
         "in every room.\n" BRK
@@ -1531,27 +1533,25 @@ namespace mod {
         "to escape, no matter what\n"
         "may try to stop you.\n" BRK
         "You're now bound by pure,\n"
-        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>recalcitrance.\n"
-        "</shake><k>\n<p>\n"
-        "XP gained from stomping\n"
-        "or kicking will reduce\n"
-        "your score.\n" BRK
+        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>recalcitrance.\n</shake>\n" BRK
+        "Enemies that are stomped\n"
+        "will give negative score.\n" BRK
         "Additionally, instant healing\n"
         "items are temporarily less\n"
         "effective.\n" END;
 
     const char recalcitranceIntro2[] =
         "<system><se_on SFX_EVT_SHOCK1><shake>Recalcitrance:</shake><wait 500> Reduced XP from\n"
-        "stomps/kicks. Healing items\n"
-        "are less effective.\n" END;
+        "stomps. Healing items are\n"
+        "less effective.\n" END;
 
     const char depravityIntro[] =
         "<system>A wave of perversion strikes\n"
         "you,<wait 200> totally derailing your\n"
         "train of thought.\n" BRK
         "Numbness is now iniquity;\n"
-        "<wait 200>you've come to revel in\n"
-        "these trials.\n" BRK
+        "<wait 200>you've come to revel in the\n"
+        "cruelty of these trials.\n" BRK
         "As if to grant your newfound\n"
         "desire,<wait 200> countless foes have\n"
         "come to block your path.\n" BRK
@@ -1559,8 +1559,7 @@ namespace mod {
         "you,<wait 200> rotting your soul like\n"
         "a terminal cancer.\n" BRK
         "You're now bound by pure,\n"
-        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>depravity.\n"
-        "</shake><k>\n<p>\n"
+        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>depravity.\n</shake>\n" BRK
         "Enemy spawn rates have\n"
         "significantly increased.\n" BRK
         "Difficult enemies are now\n"
@@ -1576,12 +1575,14 @@ namespace mod {
         "<system>A wave of lethargy strikes\n"
         "you, <wait 200>making you feel an order\n"
         "of magnitude heavier.\n" BRK
-        "Ngl bro I don't really want\n"
-        "to finish this blurb rn<wait 2000> I\n"
-        "got purple disorder irl\n" BRK
+        "The sheer magnitude of your\n"
+        "regrets now weighs on you\n"
+        "like never before.\n" BRK
+        "Every bone in your body\n"
+        "feels like it might crumble\n"
+        "into dust at any moment.\n" BRK
         "You're now bound by pure,\n"
-        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>indolence.\n"
-        "</shake><k>\n<p>\n"
+        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>indolence.\n</shake>\n" BRK
         "Getting hit may result in\n"
         "being frozen or slowed down\n"
         "for some time.\n" BRK
@@ -1599,14 +1600,14 @@ namespace mod {
         "<system>A wave of misery strikes\n"
         "you, <wait 200>doing this or that\n"
         "man idk\n" BRK
+        "I'll do this later lol\n"
+        "I'll do this later lol\n"
         "I'll do this later lol\n" BRK
         "You're now bound by pure,\n"
-        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>Melancholy.\n"
-        "</shake><k>\n<p>\n"
+        "<wait 200>unfettered <se_on SFX_EVT_SHOCK1><shake>Melancholy.\n</shake>\n" BRK
         "Every 10 seconds, you will\n"
         "be marked with 1 stack\n"
-        "of <wave>Atrophy.\n"
-        "</wave><k>\n<p>\n"
+        "of <wave>Atrophy.\n</wave>" BRK
         "<wave>Atrophy</wave> increases damage\n"
         "taken based on the number\n"
         "of stacks, up to 5 stacks.\n" BRK
@@ -1952,6 +1953,33 @@ namespace mod {
         "vulnerable to shell damage.\n" BRK
         "<wave>G<wait 300>o<wait 300>o<wait 300>o<wait 300>o<wait 300>o<wait 300>o<wait 300>d<wait 600> l<wait 300>u<wait 300>c<wait 300>k<wait 300>!\n"
         "</wave><k>";
+
+    const char holoEnemyIntro[] =
+        INIT_SYS
+        "<dynamic 2>A Holographic enemy has\n"
+        "spawned in this room!\n</dynamic>" BRK
+        "Holographic enemies have much\n"
+        "higher HP,<wait 200> deal double damage,\n"
+        "<wait 200>and have 3 extra DEF.\n" BRK
+        "However,<wait 200> they drop double XP,\n"
+        "give more coins,<wait 200> and are much\n"
+        "more likely to drop items.\n" BRK
+        "Tread carefully around them!\n" END;
+
+    const char negativeEnemyIntro[] =
+        INIT_SYS
+        "<dynamic 2>A lethal Negative enemy has\n"
+        "spawned in this room!\n</dynamic>" BRK
+        "Negative enemies have much\n"
+        "lower HP,<wait 200> but deal way more\n"
+        "damage and have high DR.\n" BRK
+        "They will yield negative XP,\n"
+        "<wait 200>but they may drop an item\n"
+        "or a bonus Chest Key.\n" BRK
+        "And, just a hint...<wait 200> they say\n"
+        "that two negatives colliding\n"
+        "can make a positive...\n" BRK
+        "Be extra careful around them!\n" END;
 
     // Tattles and Catch Cards :(
 

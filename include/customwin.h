@@ -21,10 +21,6 @@ namespace mod::customwin {
     if (CUSTOMWIN_DEBUG)                   \
         wii::os::OSReport(message, __VA_ARGS__);
 
-#define CWKEY_NAME_LENGTH 16
-#define CWSELECT_NAME_TXT_LENGTH 32
-#define CWSELECT_SIDE_TXT_LENGTH 128
-#define CWSELECT_DESC_TXT_LENGTH 300
 #define CWSELECT_ENTRY_MAX 4
 #define CWSELECT_DESC_MAX 300
 #define CWSELECT_PAGE_MAX 16
@@ -41,7 +37,7 @@ namespace mod::customwin {
     };
 
     struct CWKey {
-        char name[CWKEY_NAME_LENGTH];
+        char * name;
         u32 id;
     };
 
@@ -51,8 +47,9 @@ namespace mod::customwin {
         s32 cost;   // only read if select is Shop
         u8 page;    // only read if select is Info; index starts at 0
         wii::gx::GXColor nameColor;
-        char nameTxt[CWSELECT_NAME_TXT_LENGTH];
-        char descTxt[CWSELECT_DESC_TXT_LENGTH];
+        bool deallocStrings;
+        char * nameTxt;
+        char * descTxt;
     };
 
     struct CWSelectColorDef {
@@ -77,8 +74,8 @@ namespace mod::customwin {
         CWSelectItemDesc * Descs;
         u8 num;
         s32 itemTable[CWSELECT_PAGE_DESC_MAX];
-        char windowTitle[CWSELECT_NAME_TXT_LENGTH];
-        char windowSelect[CWSELECT_SIDE_TXT_LENGTH];
+        char * windowTitle;
+        char * windowSelect;
     };
 
     struct CWSelectInfographic {
@@ -96,9 +93,9 @@ namespace mod::customwin {
         bool muteOpenSfx;
         bool muteCloseSfx;
         bool muteDecideSfx;
-        char openSfx[32];
-        char closeSfx[32];
-        char decideSfx[32];
+        char * openSfx;
+        char * closeSfx;
+        char * decideSfx;
     };
 
     struct CWSelectCB {
@@ -134,9 +131,10 @@ namespace mod::customwin {
         bool hideDescWin;
         bool instantOpen;
         bool instantClose;
+        char * windowTitle;  // blue header, e.g. Items, Catch Cards
+        char * windowSelect; // box to the left, e.g. Select an Item, Select a Card, What do you want to sell?
         s32 itemTable[CWSELECT_DESC_MAX];
-        char windowTitle[CWSELECT_NAME_TXT_LENGTH];  // blue header, e.g. Items, Catch Cards
-        char windowSelect[CWSELECT_DESC_TXT_LENGTH]; // box to the left, e.g. Select an Item, Select a Card, What do you want to sell?
+        s32 resetItemTable[CWSELECT_DESC_MAX]; // copied from itemTable @ creation time, never changes
     };
 
     struct CWMsgGX_Tile {

@@ -11,6 +11,8 @@ USING(spm::hitdrv::HitObj)
 
 s32 fairySpindashUseFunc();
 
+void mot_fleep(MarioWork * mario);
+void mot_fleep_post(MarioWork * mario);
 void mot_spindash(MarioWork * mario);
 void mot_spindash_post(MarioWork * mario);
 void mot_hammer(MarioWork * mario);
