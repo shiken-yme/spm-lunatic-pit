@@ -458,7 +458,7 @@ namespace mod {
 
     const char cakeVDesc[] =
         "Max HP is increased by 2 for\n"
-        "every enemy room completed.\n" BRK
+        "every enemy room entered.\n" BRK
         "%d%% chance to tear after %d\n"
         "activations.\n" BRK
         "Tear: Halves total Max HP\n"

@@ -56,6 +56,7 @@ namespace mod {
     void * lpMakeEffTarget(effdrv::EffTargetType type);
     void lpBaldioOnOff(bool onOff);
     s32 lpGetDanLv();      // 1-4
+    s32 lpGetFloorNum();
     s32 lpGetDifficulty(); // 0-3
     EVT_DECLARE_USER_FUNC(evt_lp_get_difficulty, 1)
     EVT_DECLARE_USER_FUNC(evt_lp_set_difficulty, 1)

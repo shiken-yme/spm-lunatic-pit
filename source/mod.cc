@@ -1255,20 +1255,23 @@ namespace mod {
     */
     u32 animGroupBaseAsyncNew(const char * animPoseName, s32 param_2, void * readDoneCb) {
         char curAnim[32], targetAnim[32];
-        u32 size = wii::cx::CXGetUncompressedSize(lz_embedded::ag2tg), i = 0;
+        u32 size = wii::cx::CXGetUncompressedSize(lz_embedded::ag2tg), i = -1;
         const char * ag2tg = (const char *)animdrv::animdrv_wp->ag2tg->data;
         filemgr::FileEntry * model = filemgr::fileAsyncf(5, readDoneCb, "a/%s", animPoseName);
         filemgr::FileEntry * texture = nullptr;
         msl::string::strcpy(targetAnim, animPoseName);
         msl::string::strlwr(targetAnim);
-        for (; (msl::string::strcmp(curAnim, targetAnim) == 0) || ((i * 64) >= size); i += 1) {
-            msl::string::strcpy(curAnim, (ag2tg + (i * 64)));
+        do {
+            i += 1;
+            if ((i * 32) >= size)
+                break;
+            msl::string::strcpy(curAnim, (ag2tg + (i * 32)));
             msl::string::strlwr(curAnim);
-        }
+        } while (msl::string::strcmp(curAnim, targetAnim) != 0);
         if ((i * 32) >= size) {
             texture = filemgr::fileAsyncf(4, nullptr, "a/%s-", animPoseName);
         } else {
-            texture = filemgr::fileAsyncf(4, nullptr, "a/%s-", (ag2tg + (i * 64) + 32));
+            texture = filemgr::fileAsyncf(4, nullptr, "a/%s-", (ag2tg + (i * 32) + 32));
         }
         if ((s32)model == -1) {
             size = 1;
@@ -1277,7 +1280,7 @@ namespace mod {
         } else if ((s32)texture == -1) {
             size = 1;
         } else
-            size = (-(s32)texture | (u32)texture) >> 0x1f;
+            size = (-(s32)texture | (u32)texture) >> 0x1f; // funny ghidra decompiler output
         return size;
     }
 
@@ -3728,7 +3731,7 @@ namespace mod {
     IF_NOT_EQUAL(LW(0), -1) // Select menu NOT cancelled
     USER_FUNC(dan_70_artifact_get_lpitem_id, LW(0), LW(5), LW(14))
     IF_SMALL(LW(14), 4) // Demise and Delight will not trigger this
-    USER_FUNC(LPGUIShowHideStats, 1)
+    USER_FUNC(LPGUIShowHideStats, 1, 0)
     WAIT_MSEC(500)
     END_IF()
     WAIT_MSEC(500)
@@ -3743,7 +3746,7 @@ namespace mod {
     WAIT_MSEC(1400)
     USER_FUNC(evt_mario::evt_mario_set_pose, PTR("S_1"), 0)
     IF_SMALL(LW(14), 4) // Demise and Delight will not trigger this
-    USER_FUNC(LPGUIShowHideStats, 0)
+    USER_FUNC(LPGUIShowHideStats, 0, 0)
     WAIT_MSEC(500)
     END_IF()
     WAIT_MSEC(100)
@@ -4773,7 +4776,7 @@ namespace mod {
     USER_FUNC(evt_mitch_backup_descs)
     USER_FUNC(evt_sub::evt_sub_hud_configure, 1)
     USER_FUNC(evt_msg::evt_msg_print, 1, PTR(mitchThanks), 0, PTR("me"))
-    USER_FUNC(LPGUIShowHideStats, 1)
+    USER_FUNC(LPGUIShowHideStats, 1, 0)
     WAIT_MSEC(1000)
     USER_FUNC(evt_mario::evt_mario_get_pos, LW(1), LW(2), LW(3))
     USER_FUNC(RFCProcEffect, GW(6))
@@ -4797,7 +4800,7 @@ namespace mod {
     USER_FUNC(evt_msg::evt_msg_print, 1, GW(8), 0, 0)
     END_IF()
     USER_FUNC(evt_mario::evt_mario_set_pose, PTR("S_1"), 0)
-    USER_FUNC(LPGUIShowHideStats, 0)
+    USER_FUNC(LPGUIShowHideStats, 0, 0)
     WAIT_MSEC(1000)
     USER_FUNC(evt_msg::evt_msg_print, 1, PTR(mitchEnjoy), 0, PTR("me"))
     ELSE()
@@ -4903,7 +4906,7 @@ namespace mod {
     USER_FUNC(RFCAnalyzeSpecial, LW(0), LW(5)) // Takes cwselect item idx, returns RFCCustomItem idx and msg id
     IF_SMALL(LW(0), (s32)ARTIFACT_SOUL)
     IF_LARGE(LW(0), (s32)VOUCHER_BLACK)
-    USER_FUNC(LPGUIShowHideStats, 1)
+    USER_FUNC(LPGUIShowHideStats, 1, 0)
     WAIT_MSEC(500)
     END_IF()
     END_IF()
@@ -4933,7 +4936,7 @@ namespace mod {
     USER_FUNC(evt_mario::evt_mario_set_pose, PTR("S_1"), 0)
     IF_SMALL(LW(0), (s32)ARTIFACT_SOUL)
     IF_LARGE(LW(0), (s32)VOUCHER_BLACK)
-    USER_FUNC(LPGUIShowHideStats, 0)
+    USER_FUNC(LPGUIShowHideStats, 0, 0)
     END_IF()
     END_IF()
     END_IF()

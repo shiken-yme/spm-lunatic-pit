@@ -204,6 +204,13 @@ namespace mod {
         return lv;
     }
 
+    s32 lpGetFloorNum() {
+        s32 floor = swdrv::swByteGet(1);
+        if (floor >= 100)
+            floor -= 100;
+        return floor;
+    }
+
     s32 lpGetDifficulty() {
         return (s32)Lunatic->Misc.difficulty;
     }

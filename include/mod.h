@@ -40,6 +40,7 @@ namespace mod {
 
     enum LPIcon : s32 {
         ICON_LP_STATS,
+        ICON_FLOOR,
         ICON_PERCENT,
         ICON_SKULL_KEY,
         ICON_BUMP_GRAY,
@@ -329,6 +330,7 @@ namespace mod {
         bool youSuck;
         bool critDisp;
         bool critDispStartDisp;
+        bool floorDispOn;
         f32 critDispSlideOutAdj;
         s32 critDispProgress;
         char aeDescBuf[300];

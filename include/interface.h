@@ -7,5 +7,5 @@ namespace mod
 {
     void guiOverrides();
     void danYouSuck();
-    EVT_DECLARE_USER_FUNC(LPGUIShowHideStats, 1)
+    EVT_DECLARE_USER_FUNC(LPGUIShowHideStats, 2)
 }

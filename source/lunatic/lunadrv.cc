@@ -245,7 +245,7 @@ namespace mod {
         mario_pouch::MarioPouchWork * pouch = mario_pouch::pouchGetPtr();
         for (i = 0; i < 8; i += 1)
             evtmgr_cmd::evtSetValue(evtEntry, args[i], 0);
-        for (i = 0; i < Lunatic->Luna.DW.UW.Indifference.repeat; i += 1) {
+        for (i = 0; i < (Lunatic->Luna.DW.UW.Indifference.repeat + 1); i += 1) {
             s32 odds = system::rand() % 100;
             if (odds < 67 || i == 0) {
                 idx = system::rand() % (sizeof(indiffItems) / 4);

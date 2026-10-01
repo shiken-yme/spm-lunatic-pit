@@ -199,6 +199,24 @@ namespace mod {
         LPGUIDrawText((x + 16.0f), (y + 24.0f), 0.8f, 0, {255, 135, 75, 255}, false, msg);
     }
 
+    void floorDisplay(f32 x) {
+        f32 y = -65.0f;
+        Vec3 pos = {x, y, 0.0f};
+        icondrv::iconDispGxAlpha(1.0f, &pos, 0x10, TPLPATCH_ICON(ICON_FLOOR), 255);
+        pos.x += 60.0f;
+        pos.y -= 0.5f;
+        s32 numDisp[3] = {0, 0, 0};
+        s32 numDigits = split(lpGetFloorNum(), numDisp);
+        for (s32 i = 0; i < numDigits; i += 1) {
+            if (numDisp[i] == 1 && i > 0)
+                pos.x -= 3.0f;
+            icondrv::iconDispGxAlpha(1.0f, &pos, 0x10, (s32)(icondrv::ICON_0_BIG + (numDisp[i] * 2)), 255);
+            pos.x += 20.0f;
+            if (numDisp[i] == 1)
+                pos.x -= 3.0f;
+        }
+    }
+
     void critDisplay() {
         f32 slide = -100.0f;
         if (Lunatic->Interface.critDispStartDisp) {
@@ -225,9 +243,11 @@ namespace mod {
         f32 x = -440.0f + slide;
         f32 y = -20.0f;
         Vec3 pos = {x, y, 0.0f};
+        if (Lunatic->Interface.floorDispOn)
+            floorDisplay(x - 10.0f);
         icondrv::iconDispGxAlpha(0.8f, &pos, 0x10, TPLPATCH_ICON(ICON_LP_STATS), 255);
         // Draw text icons
-        s32 cmDisp[4] = {0, 0, 0, 0}; // remove this initialization sometime
+        s32 cmDisp[4] = {0, 0, 0, 0};
         s32 crDisp[4] = {0, 0, 0, 0};
         s32 defDisp[4] = {0, 0, 0, 0};
         s32 drDisp[4] = {0, 0, 0, 0};
@@ -316,9 +336,10 @@ namespace mod {
     s32 LPGUIShowHideStats(evtmgr::EvtEntry * evtEntry, bool firstRun) {
         (void)firstRun;
         evtmgr::EvtVar * args = (evtmgr::EvtVar *)evtEntry->pCurData;
-        //s32 showHide = evtmgr_cmd::evtGetValue(evtEntry, args[0]);
-        //showHide == 1 ? Lunatic->Interface.critDispStartDisp = true : Lunatic->Interface.critDispStartDisp = false;
+        // s32 showHide = evtmgr_cmd::evtGetValue(evtEntry, args[0]);
+        // showHide == 1 ? Lunatic->Interface.critDispStartDisp = true : Lunatic->Interface.critDispStartDisp = false;
         Lunatic->Interface.critDispStartDisp = (bool)evtmgr_cmd::evtGetValue(evtEntry, args[0]);
+        Lunatic->Interface.floorDispOn = (bool)evtmgr_cmd::evtGetValue(evtEntry, args[1]);
         return 2;
     }
 
@@ -421,7 +442,7 @@ namespace mod {
     WHILE()
     END_INLINE()
     WAIT_MSEC(500)
-    USER_FUNC(LPGUIShowHideStats, 1)
+    USER_FUNC(LPGUIShowHideStats, 1, 1)
     USER_FUNC(EvtCWSelectEntry, PTR("Active"), CWSELECT_DEFAULT, PTR("Active Effects"), PTR(""), 0, 0)
     USER_FUNC(EvtCWSelectHideDescWindow, PTR("Active"))
     USER_FUNC(EvtCWSelectOverrideBtnBehavior, PTR("Active"), BTN_2, PTR(DoNothing))
@@ -448,7 +469,7 @@ namespace mod {
     USER_FUNC(EvtCWSelectReset)
     END_IF()
     USER_FUNC(EvtCWSelectDelete, PTR("Active"))
-    USER_FUNC(LPGUIShowHideStats, 0)
+    USER_FUNC(LPGUIShowHideStats, 0, 1)
     USER_FUNC(evt_sub::evt_sub_intpl_msec_init, 11, 128, 255, 500)
     DO(0)
     USER_FUNC(evt_sub::evt_sub_intpl_msec_get_value)
