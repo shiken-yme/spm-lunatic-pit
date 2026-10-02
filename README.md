@@ -22,7 +22,7 @@ Please do not enable any more than one SPM mod at one time, as they are not cros
 * There are a LOT of them. If you want an idea of what to expect before jumping into the mod, I'd recommend watching a few videos or livestreams covering the newer update; otherwise, go into this expecting a brand-new Pit experience that can be enjoyed alongside the rest of the vanilla game!
 
 ## Planned Features
-* There are a LOT of them. I'll keep those a secret for now!
+* There are a LOT of them. I'll keep those a secret for now! :3c
 
 ## Bug Reports
 * Please report bugs to me in the [Flipside Tower](https://discord.gg/ndrxwcyCum) #mod-discussion channel!
@@ -34,15 +34,17 @@ Please do not enable any more than one SPM mod at one time, as they are not cros
 * JohnP55 for creating & implementing the evtpatch library
 * L5050 for creating the tplpatch library
 * Little Crap, FRN6Phantom, KoraFloof, Nevu_z, SeekyCt, Emily the Koopa, Nevu_z, Justintheosu, The Cursed Goomba, Zaku, L5050, L_K, and Flare for testing the mod's prerelease versions, helping find tons of bugs, pointing out balance issues, and recommending all sorts of changes/features
-* [Tater-Tot Tunes](https://youtu.be/C8Va9GnpAtc), [Plazzap](https://youtu.be/WS6mewhqp18), [Jdaster64](https://youtu.be/7xt3YQYxWrQ), [Zaku](https://soundcloud.com/sirfluere/pit-of-100-beats-spm-remix), and nilyoshi for letting me use their fantastic Pit of 100 Trials covers as optional background music
-  * Nilyoshi also made the [A Powerful Enemy Emerges](https://youtu.be/DvDP-1OBMsQ) remix used in the Hard Difficulty Shadoo boss fight
+* [Tater-Tot Tunes](https://youtu.be/C8Va9GnpAtc), [Plazzap](https://youtu.be/WS6mewhqp18), [Jdaster64](https://youtu.be/7xt3YQYxWrQ), [Zaku](https://soundcloud.com/sirfluere/pit-of-100-beats-spm-remix), and [nilyoshi](https://youtu.be/sfDJVGddezE) for letting me use their fantastic Pit of 100 Trials covers as optional background music
+  * nilyoshi also made the [A Powerful Enemy Emerges](https://youtu.be/DvDP-1OBMsQ) remix used in the Hard Difficulty Shadoo boss fight
+* [Bringle](https://www.youtube.com/@BringlesCan) for getting more eyes on this project than I could've ever imagined would be possible. Thank you for bringing SPM Modding into the limelight!
 * Various community members for artwork they've contributed to the mod
   * Zaku for the Wedding Hall-themed Floors 81-89 background
   * blueburrie for the new Pit Key & Voucher textures
   * Little Crap for the SPM Lunatic Pit logo
   * GearedGuy for the Stats and Disorder UI elements, many item textures, and custom title screen art
   * Toast for creating the "Aerodynamic" Mario textures
-
 * Various members of the SPM Speedrunning community and my friends for encouraging me to continue this project <3
+
+If you contributed something to the Lunatic Pit project and it hasn't been listed here, please let me know so I can add you here! >w<
 
 This is my first ever mod and serious coding project, and I could not have created it or learned nearly as much as I have without all of you. Thank you all so much. Please enjoy the mod!
