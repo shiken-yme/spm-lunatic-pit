@@ -9,7 +9,7 @@
 #include <rfcdrv.h>
 
 namespace mod {
-#define MOD_VERSION "SPM Lunatic Pit beta v3.0" // Make sure this never exceeds 48 characters
+#define MOD_VERSION "SPM Lunatic Pit beta v3.01" // Make sure this never exceeds 48 characters
 
     enum BlessId : s32 {
         /* 0x0 */ MERLUNA_NULL_BLESS,
@@ -57,6 +57,13 @@ namespace mod {
         ICON_DISORDER_INDOLENCE,
         ICON_DISORDER_MELANCHOLY,
         ICON_DISORDER_RUIN,
+        ICON_MUSIC_DEFAULT,
+        ICON_MUSIC_MODERN,
+        ICON_MUSIC_8BIT,
+        ICON_MUSIC_SYNTH,
+        ICON_MUSIC_PIANO,
+        ICON_MUSIC_BEATS,
+        ICON_MUSIC_OFF,
         ICON_BALDIO,
         ICON_CHEST_KEY,
         ICON_B,

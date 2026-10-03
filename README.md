@@ -1,14 +1,14 @@
 # SPM Lunatic Pit / Pit Randomizer Mod
 This mod randomizes the contents of the Flipside Pit of 100 Trials and adds a multitude of new features and balance changes.
 
-You may install this mod as you would any other Riivolution mod on console or Dolphin; the download can be found [here.](https://github.com/shiken-yme/spm-pit-randomizer/releases)
+You may install this mod as you would any other Riivolution mod on console or Dolphin; the download can be found [here.](https://github.com/shiken-yme/spm-lunatic-pit/releases)
 
-You may also install the mod through L5050's Flipside Mod Manager (FliMM), which can be found [here.](https://github.com/L5050/Flipside-Mod-Manager) This is highly recommended for playing mods on console, because SPM mods loaded through Riivolution may crash upon resetting the game. This is an issue that is not within my control, unfortunately.
+You may also install the mod through L5050's Flipside Mod Manager (FliMM), which can be found [here.](https://github.com/L5050/Flipside-Mod-Manager) This is highly recommended for playing mods on console, because SPM mods loaded through Riivolution may crash upon resetting the game or cause other strange issues. Riivolution-specific bugs like this are not within my control, unfortunately.
 
-Please do not enable any more than one SPM mod at one time, as they are not cross-compatible.
+Please do not enable any more than one SPM mod at one time, as they are not built to be cross-compatible.
 
 ### For Console (Wii or vWii):
-- If you have a legally-obtained ISO/WBFS rip of the game & a modded Wii/Wii U, you can use [Flipside Mod Manager](https://github.com/L5050/Flipside-Mod-Manager) to directly patch the game and then use your favorite USB Loader to load the game (I recommend using [Wii Backup Manager](https://wiibackupmanager.co.uk/WiiBackupManager_Build78.html) to load your game onto your console).
+- If you have a legally-obtained ISO/WBFS rip of the game & a modded Wii/Wii U, you can use [Flipside Mod Manager](https://github.com/L5050/Flipside-Mod-Manager) to directly patch the game and then use your favorite USB Loader (I recommend WiiFlow) to load the game. (I recommend using [Wii Backup Manager](https://wiibackupmanager.co.uk/WiiBackupManager_Build78.html) to load your game onto your external storage device!)
 - You no longer need a Gecko Code to load mods on console if you build your game with Flipside Mod Manager! If you have a REL Loader Gecko Code on your SD card, please remove it.
 
 **ALTERNATIVELY,** you may load the mod through Riivolution. Download the ZIP for your version in Releases, then drag & drop the contents of the ZIP to the root of your SD card, insert the SD card into your console, and boot up Riivolution. (To be clear, you want the "LunaticPit" and "riivolution" folders on the root of your SD card.)
@@ -41,8 +41,8 @@ Please do not enable any more than one SPM mod at one time, as they are not cros
   * Zaku for the Wedding Hall-themed Floors 81-89 background
   * blueburrie for the new Pit Key & Voucher textures
   * Little Crap for the SPM Lunatic Pit logo
-  * GearedGuy for the Stats and Disorder UI elements, many item textures, and custom title screen art
-  * Toast for creating the "Aerodynamic" Mario textures
+  * GearedGuy for the Stats and Disorder UI elements, many item and icon textures, and custom title screen art
+  * Toast for letting me use the "Aerodynamic" Mario textures
 * Various members of the SPM Speedrunning community and my friends for encouraging me to continue this project <3
 
 If you contributed something to the Lunatic Pit project and it hasn't been listed here, please let me know so I can add you here! >w<

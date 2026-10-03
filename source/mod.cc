@@ -514,7 +514,7 @@ namespace mod {
                 killXp = 0;
             if (npcCheckDanFlag(npcEntry, DAN_NPC_CHILD) == true) // If child npc, give 10% XP
                 killXp /= 10;
-            if (disorderId == DisorderId::DISORDER_CYAN && killXp > 0) // If Recalcitrance is active & enemy was defeated with a jump, multiply XP negatively
+            if (disorderId == DisorderId::DISORDER_CYAN && killXp > 0 && npcEntry->attackedDamageType == 2) // If Recalcitrance is active & enemy was defeated with a jump, multiply XP negatively
                 killXp *= ((f32)Lunatic->Luna.DW.UW.Recalcitrance.dispXPMult / 100.0f);
             if (npcCheckDanFlag(npcEntry, DAN_NPC_HOLOGRAPHIC) == true)
                 killXp *= 2; //  Holographic enemies in the Pit will give 2x score
@@ -5537,13 +5537,13 @@ namespace mod {
 
     EVT_BEGIN(cwselect_music)
     USER_FUNC(EvtCWSelectEntry, PTR("Music"), CWSELECT_DEFAULT, PTR(selectMusicBlueText), PTR(selectMusicBox), 0, 0)
-    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(vMusicName), PTR(vMusicDesc), icondrv::ICON_COOKING_DISK_R, 0, 0, 0)
-    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(nyMusicName), PTR(nyMusicDesc), icondrv::ICON_POWER_PLUS, 0, 0, 0)
-    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(ttMusicName), PTR(ttMusicDesc), icondrv::ICON_HP_PLUS, 0, 0, 0)
-    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(plMusicName), PTR(plMusicDesc), icondrv::ICON_HP_PLUS, 0, 0, 0)
-    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(jdMusicName), PTR(jdMusicDesc), icondrv::ICON_HP_PLUS, 0, 0, 0)
-    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(zkMusicName), PTR(zkMusicDesc), icondrv::ICON_HP_PLUS, 0, 0, 0)
-    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(noMusicName), PTR(noMusicDesc), icondrv::ICON_CATCH_CARD_SP, 0, 0, 0)
+    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(vMusicName), PTR(vMusicDesc), TPLPATCH_ICON(ICON_MUSIC_DEFAULT), 0, 0, 0)
+    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(nyMusicName), PTR(nyMusicDesc), TPLPATCH_ICON(ICON_MUSIC_MODERN), 0, 0, 0)
+    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(ttMusicName), PTR(ttMusicDesc), TPLPATCH_ICON(ICON_MUSIC_8BIT), 0, 0, 0)
+    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(plMusicName), PTR(plMusicDesc), TPLPATCH_ICON(ICON_MUSIC_SYNTH), 0, 0, 0)
+    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(jdMusicName), PTR(jdMusicDesc), TPLPATCH_ICON(ICON_MUSIC_PIANO), 0, 0, 0)
+    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(zkMusicName), PTR(zkMusicDesc), TPLPATCH_ICON(ICON_MUSIC_BEATS), 0, 0, 0)
+    USER_FUNC(EvtCWSelectAddListing, PTR("Music"), PTR(noMusicName), PTR(noMusicDesc), TPLPATCH_ICON(ICON_MUSIC_OFF), 0, 0, 0)
     USER_FUNC(EvtCWSelectSetHeaderColor, PTR("Music"), PTR(&MusicHeaderCol))
     USER_FUNC(EvtCWSelectSetBGColor, PTR("Music"), PTR(musicSelectBgCols), 4)
     // USER_FUNC(EvtCWSelectSetPointerIcon, PTR("Music"), icondrv::ICON_FORGET_ME_NOT_CARD_BLECK, FLOAT(0.3))
@@ -5650,6 +5650,7 @@ namespace mod {
     SET(GSWF(1621), 1) // Low HP Sounds
     SET(GSWF(1630), 1) // Lighter Tremors
     SET(GSWF(1631), 1) // Aerodynamic
+    USER_FUNC(marioMakeBald, 0)
     USER_FUNC(evt_msg::evt_msg_print, 1, PTR(quickstartText), 0, 0)
     USER_FUNC(evt_msg::evt_msg_select, 1, PTR(quickstartOptions))
     USER_FUNC(evt_msg::evt_msg_continue)
