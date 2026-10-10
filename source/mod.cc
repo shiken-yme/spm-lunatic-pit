@@ -1608,9 +1608,9 @@ namespace mod {
                 }
                 if (Lunatic->Misc.marioFullColor.a != 0 && !(mario->character == 0 && marioRemoved)) {
                     animdrv::animPoseSetDispCallback2(mario->animPoseIds[i], (void *)hijackFullMarioColor, nullptr);
-                } else {
+                }/* else {
                     animdrv::animPoseSetDispCallback2(mario->animPoseIds[i], nullptr, nullptr);
-                }
+                }*/
             }
         }
         return 2;
@@ -3646,11 +3646,14 @@ namespace mod {
     USER_FUNC(evt_npc::evt_npc_flip, LW(10))
     USER_FUNC(evt_npc::evt_npc_wait_flip_finished, LW(10))
     WAIT_MSEC(1000)
-    USER_FUNC(evt_npc::evt_npc_flag8_onoff, LW(10), 1, 8)
+    INLINE_EVT()
+    USER_FUNC(evt_npc::evt_npc_flag8_onoff, LW(10), 1, 8) // Gravity?
     WAIT_MSEC(500)
     USER_FUNC(evt_snd::evt_snd_sfxon_npc, PTR("SFX_P_MARIO_LAND1"), LW(10))
+    END_INLINE()
     USER_FUNC(evt_cam::evt_cam3d_evt_zoom_in, 1, 0, 75, 484, 0, 75, -16, 800, 11)
-    WAIT_MSEC(800)
+    USER_FUNC(evt_env::evt_env_blur_on, 0, 800)
+    IF_EQUAL(GSW(1622), 0)
     USER_FUNC(evt_snd::evt_snd_sfxon_3d_player_character, PTR("SFX_P_V_MARIO_BIKKURI1"), PTR("SFX_P_V_PEACH_ATTACK4"), PTR("SFX_P_V_KOOPA_BIKKURI1"),
               PTR("SFX_P_V_LUIGI_BIKKURI1"))
     USER_FUNC(evt_mario::evt_mario_set_pose, PTR("E_5"), 0)
@@ -3661,11 +3664,12 @@ namespace mod {
     ELSE()
     USER_FUNC(evt_mario::evt_mario_set_pose, PTR("S_1"), 0)
     END_IF()
+    END_IF()
     WAIT_MSEC(300)
     USER_FUNC(evt_msg::evt_msg_print, 1, PTR(shadooDoBattle), 0, LW(10))
     USER_FUNC(evt_npc::evt_npc_restart_evt_id, LW(10))
     USER_FUNC(evt_cam::evt_cam_zoom_to_coords, 500, 11)
-    WAIT_MSEC(500)
+    USER_FUNC(evt_env::evt_env_blur_on, 1, 500)
     USER_FUNC(evt_mario::evt_mario_set_anim_change_handler, 0)
     USER_FUNC(evt_mario::evt_mario_key_on)
     RUN_CHILD_EVT(dan::dan_shadoo_fight_evt)

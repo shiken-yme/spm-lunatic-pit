@@ -458,6 +458,8 @@
 // evt_env.c
 800e658c:evt_env_blur_on
 800e6624:evt_env_static_blur_on
+800e6650:evt_env_warp_onoff
+800e6748:evt_env_set_warp_alpha
 800e6a94:evt_env_refract_on
 
 // evt_fade.c
