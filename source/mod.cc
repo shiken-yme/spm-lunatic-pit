@@ -1726,13 +1726,14 @@ namespace mod {
     static void pluswinWhackaBump() { writeBranchLink(pausewin::pluswinKeyItemMain, 0x5E4, pluswinWhackaBumpFunc); }
 
     void DanEnemyNegativeDispCb(wii::gx::GXTexObj * texObj) {
-        wii::gx::GXSetTevOrder(texObj->stage, 255, 255, 255);
+        s32 stage = texObj->stage;
+        wii::gx::GXSetTevOrder(stage, 255, 255, 255);
         wii::gx::GXSetBlendMode(2, 2, 2, 12);
         wii::gx::GXSetAlphaUpdate(1);
         wii::gx::GXSetColorUpdate(1);
-        wii::gx::GXSetTevColorIn(texObj->stage, 0, 0, 0, 15);
-        wii::gx::GXSetTevAlphaIn(texObj->stage, 7, 7, 7, 0);
-        texObj->stage += 1;
+        wii::gx::GXSetTevColorIn(stage, 0, 0, 0, 15);
+        wii::gx::GXSetTevAlphaIn(stage, 7, 7, 7, 0);
+        texObj->stage = stage + 1;
         return;
     }
 
