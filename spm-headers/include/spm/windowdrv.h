@@ -23,7 +23,7 @@ typedef void (WindowFunc)(struct _WindowEntry * entry);
 
 typedef struct _WindowEntry
 {
-/* 0x00 */ u8 unknown_0x0[0x2 - 0x0];
+/* 0x00 */ u16 state;
     /*
         1 active
         Others unknown

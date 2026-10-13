@@ -39,6 +39,10 @@ namespace mod::patch
     ((0x80000000 | (offset & 0xFFFF)) + (destReg * 0x200000) + (srcReg * 0x10000))
 #define STW(destReg, offset, srcReg) \
     ((0x90000000 | (offset & 0xFFFF)) + (destReg * 0x200000) + (srcReg * 0x10000))
+#define STH(destReg, offset, srcReg) \
+    ((0xB0000000 | (offset & 0xFFFF)) + (destReg * 0x200000) + (srcReg * 0x10000))
+#define STB(destReg, offset, srcReg) \
+    ((0x98000000 | (offset & 0xFFFF)) + (destReg * 0x200000) + (srcReg * 0x10000))
 #define CMPWI(reg, val) \
     ((0x2C000000 | (val & 0xFFFF)) + (reg * 0x10000))
 

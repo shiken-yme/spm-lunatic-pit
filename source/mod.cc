@@ -13,6 +13,7 @@
 #include <lp_common.h>
 #include <mempatch.h>
 #include <msgpatch.h>
+#include <msgskip.h>
 #include <sndpatch.h>
 #include <tplpatch.h>
 #include <util.h>
@@ -6799,6 +6800,7 @@ namespace mod {
         // bero::beroberoInit();
         // globalop::globalopAddEntry((void *)rotateCustomDokans, nullptr);
         acpatch::acpatchInit();
+        msgskip::msgSkipInit();
         // Add new BGM entries
         sndpatch::sndpatchAddBGMEntryDirect("BGM_MAP_100F8BIT", 1385, 50, 64, 0, 0);
         sndpatch::sndpatchAddBGMEntryDirect("BGM_MAP_100FSYNTH", 1378, 127, 64, 0, 0);

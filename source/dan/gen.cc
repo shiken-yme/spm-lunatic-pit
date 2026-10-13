@@ -1110,6 +1110,20 @@ namespace mod {
         return itemId;
     }
 
+    // todo: add more DanGen_Items logic here, make rerolls more likely to hit higher tiers, and make higher tiers slightly more likely in later floors
+    s32 DanGen_GetChestRarity() {
+        s32 odds = system::rand() % 100, rarity;
+        if (odds < 40) // 40% for Common
+            rarity = 0;
+        else if (odds < 70) // 30% for Uncommon
+            rarity = 1;
+        else if (odds < 90) // 20% for Rare
+            rarity = 2;
+        else // 10% for Legendary
+            rarity = 3;
+        return rarity;
+    }
+
     void DanGen_Items(bool onRoomLoad) {
         s32 rarity = 0, itemRarity = 0, odds = 0, i = 0, itemId = 0;
         VoucherState vState = VoucherGetStateById(VOUCHER_STELLAR);
@@ -1128,14 +1142,7 @@ namespace mod {
         msl::string::memset(Lunatic->RFC.rfcItemIds, 0, sizeof(Lunatic->RFC.rfcItemIds));
         // Decides chest rarity; tries again if a Reroll hits the same rarity OR Stellar is active
         do {
-            odds = system::rand() % 100;
-            rarity = 0;
-            if (odds < 60) // 30% for Uncommon
-                rarity = 1;
-            if (odds < 30) // 20% for Rare
-                rarity = 2;
-            if (odds < 10) // 10% for Legendary
-                rarity = 3;
+            rarity = DanGen_GetChestRarity();
         } while ((!onRoomLoad && rarity == Lunatic->RFC.chestRarity) || (vState == V_ACTIVE && (rarity == Lunatic->RFC.chestRarity || rarity == 0)));
         // First rest floor should start with a common or uncommon chest
         if (onRoomLoad && swdrv::swByteGet(1) == 10) {

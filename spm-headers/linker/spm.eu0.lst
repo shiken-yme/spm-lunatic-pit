@@ -47,8 +47,11 @@
 // msgdrv.c
 8002f130:msgLoad
 8002f35c:msgUnLoad
+8002f51c:msgMain
 8003270c:msgSearch
 800327e4:msgSearchNoFallback
+80033234:msgWindow_Main
+80033a40:msgWindow_Clear_Main
 //data
 80405bd8:msgdrv_msgIcon
 805adf18:msgdrv_msgw
