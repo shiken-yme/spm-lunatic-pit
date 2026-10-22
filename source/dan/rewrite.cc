@@ -796,7 +796,7 @@ namespace mod {
                 mario->subMotionId = 20;
             }
             if ((mario->miscFlags & MARIO_MISC_FLAG_SPACE_SWIM) == 0) { // Again, NOT in space
-                if (mario->hitObjRide == nullptr) {                    // No longer on a floor; end spindash immediately
+                if (mario->hitObjRide == nullptr) {                     // No longer on a floor; end spindash immediately
                     spmario_snd::spsndSFXOff(mario->motTempS[2]);
                     mario->motTempS[2] = -1;
                     mario_sbr::marioAdjustMoveDir();

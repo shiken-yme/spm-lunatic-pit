@@ -47,9 +47,19 @@ namespace mod::sndpatch
         sndpatchAddBGMEntry(&entry);
     }
 
+    /*void fuckthewiimotelowkeybruh() {
+        SfxEntry * sfx = spssfxlist;
+        for (s32 i = 0; i < spsnd_work.sfxCount; i += 1) {
+            sfx->setupFlags &= ~0x18;
+            sfx++;
+        }
+        return;
+    }*/
+
     void sndpatchInit()
     {
         sndpatchExpandBGMSlots();
+        //fuckthewiimotelowkeybruh();
         return;
     }
 }

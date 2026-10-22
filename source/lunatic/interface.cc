@@ -176,7 +176,8 @@ namespace mod {
                     wii::mtx::PSMTXRotRad((Lunatic->Voucher.Work[i]->iconRotation * PI / 180.0f), mtxRot, 0x79); // 'y'
                     wii::mtx::PSMTXConcat(mtxPos, mtxScale, mtxPos);
                     wii::mtx::PSMTXConcat(mtxPos, mtxRot, mtxPos);
-                    icondrv::iconDispGxCol(mtxPos, 0x10, TPLPATCH_ICON(Lunatic->Voucher.Work[i]->iconId), {255, 255, 255, Lunatic->Voucher.Work[i]->iconAlpha});
+                    wii::gx::GXColor col = {255, 255, 255, Lunatic->Voucher.Work[i]->iconAlpha};
+                    icondrv::iconDispGxCol(mtxPos, 0x10, TPLPATCH_ICON(Lunatic->Voucher.Work[i]->iconId), &col);
                     y -= 44.0f;
                 }
             }
@@ -192,7 +193,8 @@ namespace mod {
         wii::mtx::PSMTXTrans(mtxPos, x, y, 0.0f);
         wii::mtx::PSMTXScale(mtxScale, 0.8f, 0.8f, 0.8f);
         wii::mtx::PSMTXConcat(mtxPos, mtxScale, mtxPos);
-        icondrv::iconDispGxCol(mtxPos, 0x10, TPLPATCH_ICON(ICON_CHEST_KEY), {255, 255, 255, 255});
+        wii::gx::GXColor col = {255, 255, 255, 255};
+        icondrv::iconDispGxCol(mtxPos, 0x10, TPLPATCH_ICON(ICON_CHEST_KEY), &col);
         char buffer[4];
         msl::stdio::sprintf(buffer, "%d", Lunatic->RFC.chestKeysOwned);
         const char * msg = buffer;

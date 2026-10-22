@@ -994,7 +994,8 @@
 
 // seq_load_sub.c
 // text
-8017d1ac:loadMain
+8017d1ac:seq_load_sub_loadMain
+8017e880:windowRenderMain
 // data
 805ae0d0:seq_load_sub_wp
 
@@ -1287,6 +1288,7 @@
 80532fe0:spsndBgmPlayers
 805339f0:spsnd_work
 805aea18:spsbgmlist
+805aea1c:spssfxlist
 // more
 
 // nw4r::lyt.cpp
@@ -1309,9 +1311,15 @@
 805ae1a8:relCompName
 
 // nandmgr.c
+8023e60c:nandInit
 8023e9ec:nandGetSaveFiles
+8023ed08:nandClearSave
 8023edcc:nandUpdateSave
 8023efe0:nandLoadSave
+8023f570:nandWriteAllSavesMain
+8023fa24:nandWriteSaveMain
+8023fd64:nandWriteBannerLoadAllSavesMain
+80240414:nandDeleteSaveMain
 // more
 // data
 805ae1b0:nandmgr_wp
@@ -1321,6 +1329,8 @@
 8024174c:evt_nand_update_save
 804e5658:savefile_update_evt
 804e5c20:evt_memcard_save
+804e5c48:delete_save_confirm_evt
+804e5d40:copy_save_confirm_evt
 
 // homebuttondrv.c
 // text

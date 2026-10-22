@@ -3,7 +3,7 @@
 #include "patch.h"
 #include "romfontexpand.h"
 #include <acpatch.h>
-// #include <berobero.h>
+#include <berobero.h>
 #include <common.h>
 #include <customwin.h>
 #include <effpatch.h>
@@ -14,6 +14,7 @@
 #include <mempatch.h>
 #include <msgpatch.h>
 #include <msgskip.h>
+#include <savepatch.h>
 #include <sndpatch.h>
 #include <tplpatch.h>
 #include <util.h>
@@ -1489,7 +1490,7 @@ namespace mod {
         // patch title screen
         writeBranchLink(temp_unk::func_802f2860, 0x38, patchTitle);
         // add mod version check to save load
-        writeBranchLink(seq_load_sub::loadMain, 0x880, savefileStartEvtOverwrite);
+        writeBranchLink(seq_load_sub::seq_load_sub_loadMain, 0x880, savefileStartEvtOverwrite);
         // aerodynamic
         writeBranchLink(mario::marioUpdateCharProperties, 0xD4, marioChgBaseSpeedStats);
         writeBranchLink(mario::marioUpdateCharProperties, 0x148, marioChgBaseSpeedStats);
@@ -1609,9 +1610,9 @@ namespace mod {
                 }
                 if (Lunatic->Misc.marioFullColor.a != 0 && !(mario->character == 0 && marioRemoved)) {
                     animdrv::animPoseSetDispCallback2(mario->animPoseIds[i], (void *)hijackFullMarioColor, nullptr);
-                }/* else {
-                    animdrv::animPoseSetDispCallback2(mario->animPoseIds[i], nullptr, nullptr);
-                }*/
+                } /* else {
+                     animdrv::animPoseSetDispCallback2(mario->animPoseIds[i], nullptr, nullptr);
+                 }*/
             }
         }
         return 2;
@@ -6797,7 +6798,9 @@ namespace mod {
         tplpatch::iconPatch(wicon2);
         effpatch::effpatchInit();
         sndpatch::sndpatchInit();
-        // bero::beroberoInit();
+        const char * LPSavePrefix = "LUNATIC";
+        savepatch::main(LPSavePrefix);
+        bero::beroberoInit();
         // globalop::globalopAddEntry((void *)rotateCustomDokans, nullptr);
         acpatch::acpatchInit();
         msgskip::msgSkipInit();
