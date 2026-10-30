@@ -1111,8 +1111,8 @@ namespace mod {
     }
 
     // todo: add more DanGen_Items logic here, make rerolls more likely to hit higher tiers, and make higher tiers slightly more likely in later floors
-    s32 DanGen_GetChestRarity() {
-        s32 odds = system::rand() % 100, rarity;
+    s32 DanGen_GetChestRarity(s32 preRarity, bool onRoomLoad) {
+        s32 odds = system::rand() % 100, rarity, vs;
         if (odds < 40) // 40% for Common
             rarity = 0;
         else if (odds < 70) // 30% for Uncommon
@@ -1121,6 +1121,15 @@ namespace mod {
             rarity = 2;
         else // 10% for Legendary
             rarity = 3;
+        if (!onRoomLoad && preRarity >= rarity) {
+            odds = system::rand() % 100;
+            // Base 34% chance to hit "pity" & guarantee rarity 1 higher than starting rarity
+            // Each add'l reroll increases "pity" by 16 (34 -> 50 -> 66 -> 82 -> 98, etc.)
+            vs = 34 + ((Lunatic->RFC.rerolls - 1) * 16); 
+            if (odds < vs)
+                rarity = preRarity + 1;
+            rarity = clamp(rarity, 0, 3);
+        }
         return rarity;
     }
 
@@ -1142,7 +1151,7 @@ namespace mod {
         msl::string::memset(Lunatic->RFC.rfcItemIds, 0, sizeof(Lunatic->RFC.rfcItemIds));
         // Decides chest rarity; tries again if a Reroll hits the same rarity OR Stellar is active
         do {
-            rarity = DanGen_GetChestRarity();
+            rarity = DanGen_GetChestRarity(rarity, onRoomLoad);
         } while ((!onRoomLoad && rarity == Lunatic->RFC.chestRarity) || (vState == V_ACTIVE && (rarity == Lunatic->RFC.chestRarity || rarity == 0)));
         // First rest floor should start with a common or uncommon chest
         if (onRoomLoad && swdrv::swByteGet(1) == 10) {

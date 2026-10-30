@@ -923,7 +923,7 @@ namespace mod {
         evtmgr::EvtVar * args = (evtmgr::EvtVar *)evtEntry->pCurData;
         evtmgr_cmd::evtSetValue(evtEntry, args[0], Lunatic->RFC.chestKeys);      // chest keys required
         evtmgr_cmd::evtSetValue(evtEntry, args[1], Lunatic->RFC.chestKeysOwned); // chest keys owned
-        evtmgr_cmd::evtSetValue(evtEntry, args[2], Lunatic->RFC.rerollCost);     // chest keys owned
+        evtmgr_cmd::evtSetValue(evtEntry, args[2], Lunatic->RFC.rerollCost);     // chest keys needed for reroll
         return 2;
     }
 
@@ -996,7 +996,10 @@ namespace mod {
         mobjdrv::mobjHitEntry(mobj, 6);
         mobjdrv::mobjCalcMtx(mobj);
         mobj->updateFunction = evt_mobj::mobj_thako;
-        mobj->interactScript = interactScript;
+        if (interactScript != (spm::evtmgr::EvtScriptCode *)0x42069)
+            mobj->interactScript = interactScript;
+        else
+            mobj->afterInteractScript = new_dan_chest_interact_evt;
         if (openScript != (spm::evtmgr::EvtScriptCode *)0x42069)
             mobj->afterInteractScript = openScript;
         else

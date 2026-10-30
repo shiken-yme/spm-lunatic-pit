@@ -9,7 +9,7 @@
 #include <rfcdrv.h>
 
 namespace mod {
-#define MOD_VERSION "SPM Lunatic Pit beta v3.01" // Make sure this never exceeds 48 characters
+#define MOD_VERSION "SPM Lunatic Pit beta v3.1" // Make sure this never exceeds 48 characters
 
     enum BlessId : s32 {
         /* 0x0 */ MERLUNA_NULL_BLESS,
@@ -364,6 +364,7 @@ namespace mod {
 
     EVT_DECLARE(fwd_mover_speech)
     EVT_DECLARE(custom_pit_music)
+    EVT_DECLARE(new_dan_chest_interact_evt)
     EVT_DECLARE(new_dan_chest_open_evt)
 
     EVT_DECLARE_USER_FUNC(rand100, 1)

@@ -3,7 +3,7 @@
 #include "patch.h"
 #include "romfontexpand.h"
 #include <acpatch.h>
-#include <berobero.h>
+//#include <berobero.h>
 #include <common.h>
 #include <customwin.h>
 #include <effpatch.h>
@@ -4871,9 +4871,6 @@ namespace mod {
 
     EVT_BEGIN(dan_chest_close_evt)
     USER_FUNC(evt_mobj::evt_mobj_get_position, PTR(rfcChestName), LW(0), LW(1), LW(2))
-    /*ADDF(LW(1), 15)
-    USER_FUNC(evt_snd::evt_snd_sfxon_3d, PTR("SFX_E_CAMEREBOM2_APPEAR1"), LW(0), LW(1), LW(2))
-    USER_FUNC(evt_eff::evt_eff, 0, PTR("kemuri_test"), 0, LW(0), LW(1), LW(2), FLOAT(6.0), 0, 0, 0, 0, 0, 0, 0)*/
     USER_FUNC(evt_mobj::evt_mobj_delete, PTR(rfcChestName))
     USER_FUNC(RFCGenerate, 0, 0x42069) // Magic number necessary since this needs to call new_dan_chest_open_evt, but that evt needs to call this one too
     USER_FUNC(evt_npc::evt_npc_unfreeze_all)
@@ -4887,17 +4884,66 @@ namespace mod {
         {{255, 250, 200, 255}, {255, 250, 200, 255}, 120, 120}, // Yellow
     };
 
+    EVT_BEGIN(dan_chest_poor_on_keys_evt)
+    USER_FUNC(evt_sub::evt_sub_random, 3, LW(5))
+    ADD(LW(5), 2)
+    MUL(LW(5), 1000)
+    WAIT_MSEC(LW(5))
+    MARIO_SPAWN_QUESTION_MARK()
+    USER_FUNC(evt_mario::evt_mario_set_pose, PTR("T_10"), 0)
+    WAIT_MSEC(1500)
+    USER_FUNC(RFCBakudan)
+    USER_FUNC(evt_mobj::evt_mobj_get_position, PTR(rfcChestName), LW(0), LW(1), LW(2))
+    USER_FUNC(evt_snd::evt_snd_sfxon_3d, PTR("SFX_E_NINJA_BOMB_FIRE1"), LW(0), LW(1), LW(2))
+    USER_FUNC(evt_eff::evt_eff, 0, PTR("spm_explosion"), 0, LW(0), LW(1), LW(2), FLOAT(1.5), 0, 0, 0, 0, 0, 0, 0)
+    USER_FUNC(evt_mobj::evt_mobj_delete, PTR(rfcChestName))
+    USER_FUNC(evt_npc::evt_npc_unfreeze_all)
+    RETURN()
+    EVT_END()
+
+    EVT_BEGIN(dan_chest_reroll_evt)
+    IF_NOT_EQUAL(LW(4), 1)
+    IF_SMALL(LW(2), LW(3))
+    RUN_CHILD_EVT(dan_chest_poor_on_keys_evt)
+    RETURN()
+    END_IF()
+    SUB(LW(2), LW(3))
+    USER_FUNC(RFCSetChestKeys, LW(2))
+    END_IF()
+    WAIT_MSEC(500)
+    USER_FUNC(evt_mobj::evt_mobj_get_position, PTR(rfcChestName), LW(0), LW(1), LW(2))
+    ADDF(LW(1), 15)
+    USER_FUNC(evt_snd::evt_snd_sfxon_3d, PTR("SFX_E_CAMEREBOM2_APPEAR1"), LW(0), LW(1), LW(2))
+    USER_FUNC(evt_eff::evt_eff, 0, PTR("kemuri_test"), 0, LW(0), LW(1), LW(2), FLOAT(6.0), 0, 0, 0, 0, 0, 0, 0)
+    USER_FUNC(evt_mobj::evt_mobj_delete, PTR(rfcChestName))
+    USER_FUNC(RFCReroll)
+    RETURN()
+    EVT_END()
+
     EVT_BEGIN(new_dan_chest_open_evt)
     USER_FUNC(evt_mobj::evt_mobj_wait_animation_end, PTR(rfcChestName), 0)
     USER_FUNC(RFCGetPtr, LW(1))
-    USER_FUNC(EvtCWSelectEntry, PTR("RFC"), CWSELECT_DEFAULT, PTR("Loot"), PTR("Pick an item,\nany item!"), LW(1), 3)
+    USER_FUNC(EvtCWSelectEntry, PTR("RFC"), CWSELECT_DEFAULT, PTR("Loot"), PTR("Pick any item!\n<icon PAD_1 0.67 0 0 0> to close or reroll"), LW(1), 3)
     USER_FUNC(EvtCWSelectSetHeaderColor, PTR("RFC"), PTR(&RFCHeaderCol))
     USER_FUNC(EvtCWSelectSetBGColor, PTR("RFC"), PTR(rfcSelectBgCols), 4)
     USER_FUNC(EvtCWSelectMenuStart, PTR("RFC"), 0, LW(0))
     IF_EQUAL(LW(0), -1) // Select menu cancelled
     USER_FUNC(EvtCWSelectReset)
     USER_FUNC(EvtCWSelectDelete, PTR("RFC"))
-    RUN_EVT(dan_chest_close_evt)
+    USER_FUNC(MsgIconReplaceIdx, 3, (s32)(TPLPATCH_ICON(ICON_CHEST_KEY)))
+    USER_FUNC(RFCGetChestKeyParams, LW(1), LW(2), LW(3))
+    USER_FUNC(evt_msg::evt_msg_print_insert, 1, PTR(rfcConfirmCloseAction), 0, 0, LW(3), LW(2))
+    USER_FUNC(evt_msg::evt_msg_select, 1, PTR(rfcCloseOptions))
+    USER_FUNC(evt_msg::evt_msg_continue)
+    USER_FUNC(MsgIconReplaceIdx, 3, (s32)icondrv::ICON_BTN_1)
+    SET(LW(5), LW(0))
+    RUN_CHILD_EVT(dan_chest_close_evt)
+    IF_EQUAL(LW(5), 1) // Reroll
+    USER_FUNC(DebugModeGetStatus, LW(4))
+    RUN_CHILD_EVT(dan_chest_reroll_evt)
+    USER_FUNC(RFCGenerate, 0x42069, PTR(new_dan_chest_open_evt)) // Magic number to ref interact_evt. I really hate this but I'm not reworking it.
+    END_IF()
+    USER_FUNC(evt_mario::evt_mario_key_on)
     RETURN()
     END_IF()
     USER_FUNC(EvtCWSelectGetSelectionItemId, LW(0), LW(4))
@@ -4950,23 +4996,6 @@ namespace mod {
     RETURN()
     EVT_END()
 
-    EVT_BEGIN(dan_chest_poor_on_keys_evt)
-    USER_FUNC(evt_sub::evt_sub_random, 3, LW(5))
-    ADD(LW(5), 2)
-    MUL(LW(5), 1000)
-    WAIT_MSEC(LW(5))
-    MARIO_SPAWN_QUESTION_MARK()
-    USER_FUNC(evt_mario::evt_mario_set_pose, PTR("T_10"), 0)
-    WAIT_MSEC(1500)
-    USER_FUNC(RFCBakudan)
-    USER_FUNC(evt_mobj::evt_mobj_get_position, PTR(rfcChestName), LW(0), LW(1), LW(2))
-    USER_FUNC(evt_snd::evt_snd_sfxon_3d, PTR("SFX_E_NINJA_BOMB_FIRE1"), LW(0), LW(1), LW(2))
-    USER_FUNC(evt_eff::evt_eff, 0, PTR("spm_explosion"), 0, LW(0), LW(1), LW(2), FLOAT(1.5), 0, 0, 0, 0, 0, 0, 0)
-    USER_FUNC(evt_mobj::evt_mobj_delete, PTR(rfcChestName))
-    USER_FUNC(evt_npc::evt_npc_unfreeze_all)
-    RETURN()
-    EVT_END()
-
     EVT_BEGIN(new_dan_chest_interact_evt)
     LBL(99)
     USER_FUNC(RFCGetRarity, 0, LW(0))
@@ -4996,21 +5025,7 @@ namespace mod {
     USER_FUNC(evt_mario::evt_mario_key_on)
     CASE_EQUAL(2) // Reroll
     USER_FUNC(evt_msg::evt_msg_continue)
-    IF_NOT_EQUAL(LW(4), 1)
-    IF_SMALL(LW(2), LW(3))
-    RUN_CHILD_EVT(dan_chest_poor_on_keys_evt)
-    RETURN()
-    END_IF()
-    SUB(LW(2), LW(3))
-    USER_FUNC(RFCSetChestKeys, LW(2))
-    END_IF()
-    WAIT_MSEC(1000)
-    USER_FUNC(evt_mobj::evt_mobj_get_position, PTR(rfcChestName), LW(0), LW(1), LW(2))
-    ADDF(LW(1), 15)
-    USER_FUNC(evt_snd::evt_snd_sfxon_3d, PTR("SFX_E_CAMEREBOM2_APPEAR1"), LW(0), LW(1), LW(2))
-    USER_FUNC(evt_eff::evt_eff, 0, PTR("kemuri_test"), 0, LW(0), LW(1), LW(2), FLOAT(6.0), 0, 0, 0, 0, 0, 0, 0)
-    USER_FUNC(evt_mobj::evt_mobj_delete, PTR(rfcChestName))
-    USER_FUNC(RFCReroll)
+    RUN_CHILD_EVT(dan_chest_reroll_evt)
     USER_FUNC(RFCGenerate, PTR(new_dan_chest_interact_evt), PTR(new_dan_chest_open_evt))
     USER_FUNC(evt_npc::evt_npc_unfreeze_all)
     WAIT_MSEC(500)
@@ -6800,7 +6815,7 @@ namespace mod {
         sndpatch::sndpatchInit();
         const char * LPSavePrefix = "LUNATIC";
         savepatch::main(LPSavePrefix);
-        bero::beroberoInit();
+        // bero::beroberoInit();
         // globalop::globalopAddEntry((void *)rotateCustomDokans, nullptr);
         acpatch::acpatchInit();
         msgskip::msgSkipInit();

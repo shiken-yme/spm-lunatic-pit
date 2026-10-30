@@ -336,6 +336,17 @@ namespace mod {
         "active Voucher anytime in the\n"
         "<icon PAD_1 0.67 0 0 0> Active Effects menu.\n" END;
 
+    const char rfcConfirmCloseAction[] =
+        INIT_SYS
+        "Would you like to close the\n"
+        "chest or reroll for <icon PAD_1 0.67 0 1 3>%d?\n"
+        "(You have <icon PAD_1 0.67 0 1 3>%d.)\n" PROMPT;
+
+    const char rfcCloseOptions[] =
+        "<select 0 -1 160 40>\n"
+        "Close\n"
+        "Reroll";
+
     const char chestKeyName[] =
         "Chest Key";
 
