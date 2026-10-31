@@ -27,11 +27,14 @@ enum NandTask
 {
 /* 0x0 */ NANDMGR_TASK_NONE,
 /* 0x1 */ NANDMGR_TASK_CHECK,
+    // US2 removes the write banner task & merges functionality with write banner load all saves
+#ifndef SPM_US2
 /* 0x2 */ NANDMGR_TASK_WRITE_BANNER,
-/* 0x3 */ NANDMGR_TASK_WRITE_ALL_SAVES,
-/* 0x4 */ NANDMGR_TASK_WRITE_SAVE,
-/* 0x5 */ NANDMGR_TASK_WRITE_BANNER_LOAD_ALL_SAVES,
-/* 0x6 */ NANDMGR_TASK_DELETE_SAVE
+#endif
+/* 0x2 / 0x3 */ NANDMGR_TASK_WRITE_ALL_SAVES,
+/* 0x3 / 0x4 */ NANDMGR_TASK_WRITE_SAVE,
+/* 0x4 / 0x5 */ NANDMGR_TASK_WRITE_BANNER_LOAD_ALL_SAVES,
+/* 0x5 / 0x6 */ NANDMGR_TASK_DELETE_SAVE
 };
 
 #define SAVE_FLAG_1 1

@@ -112,7 +112,7 @@ namespace mod::savepatch {
                 savepatch_wp->page = 3;
             }
             // reloads nandmgr_wp->saves
-            nandmgr_wp->task = 5;
+            nandmgr_wp->task = NANDMGR_TASK_WRITE_BANNER_LOAD_ALL_SAVES;
             nandmgr_wp->stage = 0;
             nandmgr_wp->flag = 1;
             nandmgr_wp->code = 0;
@@ -122,7 +122,7 @@ namespace mod::savepatch {
         } else if (savepatch_wp->moveMode != MOVE_NONE) {
             // this whole move mode mechanic is complete nonsense and I hate the way I did all of this. but it works! hope this smurfs
             f32 xOffset = intplGetValue(INTPL_MODE_QUADRATIC_OUT, 0.0f, MOVE_DEST_LENGTH, savepatch_wp->moveTimer, MOVE_TIME_FRMS);
-            if (nandmgr_wp->task != 5 || savepatch_wp->moveTimer < MOVE_TIME_PHASE1_FRMS) {
+            if (nandmgr_wp->task != NANDMGR_TASK_WRITE_BANNER_LOAD_ALL_SAVES || savepatch_wp->moveTimer < MOVE_TIME_PHASE1_FRMS) {
                 savepatch_wp->moveTimer++;
             }
             if (savepatch_wp->moveTimer > MOVE_TIME_PHASE1_FRMS) {
@@ -246,7 +246,7 @@ namespace mod::savepatch {
     void write_file_num_to_menu(Mtx34 mtx, s32 n) {
         char buf[16];
         s32 page = savepatch_wp->page;
-        if (nandmgr_wp->task == 5) { // If loading new files, this display is ahead of prepared files, so resync
+        if (nandmgr_wp->task == NANDMGR_TASK_WRITE_BANNER_LOAD_ALL_SAVES) { // If loading new files, this display is ahead of prepared files, so resync
             if (seq_load_sub_wp->curSelection == SEQ_LOAD_BTN_PAGE_LEFT) {
                 page += 1;
             } else {
@@ -302,51 +302,94 @@ namespace mod::savepatch {
         msl::string::memset(savepatch_wp, 0, sizeof(SavepatchWork));
         savepatch_wp->saveName = name;
         loadMainReal = patch::hookFunction(seq_load_sub_loadMain, seq_load_sub_chg_saves);
+
         // Read refs to custom saves instead of wiimarioXX saves
         writeBranchLink(nandWriteBannerLoadAllSavesMain, 0x42C, new_sprintf);
-        writeBranchLink(nandWriteAllSavesMain, 0x184, new_sprintf);
-        writeBranchLink(nandWriteAllSavesMain, 0x210, new_sprintf);
+        #if defined(SPM_US2)
+            writeBranchLink(nandWriteAllSavesMain, 0x178, new_sprintf); 
+            writeBranchLink(nandWriteAllSavesMain, 0x204, new_sprintf);
+        #else
+            writeBranchLink(nandWriteAllSavesMain, 0x184, new_sprintf); 
+            writeBranchLink(nandWriteAllSavesMain, 0x210, new_sprintf);
+        #endif
         writeBranchLink(nandWriteSaveMain, 0x16C, new_sprintf);
         writeBranchLink(nandDeleteSaveMain, 0x15C, new_sprintf);
+
         // Extend nandmgr savefile allocation space
         nandInitNew();
+
         // Create 16 saves instead of 4
-        writeWord(nandWriteAllSavesMain, 0x458, CMPWI(0, 16));
+        #if defined(SPM_US2)
+            writeWord(nandWriteAllSavesMain, 0x44C, CMPWI(0, 16));
+        #else
+            writeWord(nandWriteAllSavesMain, 0x458, CMPWI(0, 16));
+        #endif
+
         // "save file X" messages recognize files 5-16
         writeBranchLink(seq_load_sub_loadMain, 0x89C, write_file_num_to_load_msg);
         writeBranchLink(seq_load_sub_loadMain, 0xBA8, write_file_num_to_erase_msg);
         writeBranchLink(seq_load_sub_loadMain, 0x109C, write_file_num_to_copy_msg);
-        // I really don't want to make evtpatch a dependency so we're gonna do evt patches like thiiiiis
+        // cont. I really don't want to make evtpatch a dependency, so we're gonna do some fuckass evt patches like thiiiiis
         writeWord(delete_save_confirm_evt, 0x3C, LW(13));
         writeWord(delete_save_confirm_evt, 0xCC, LW(13));
         writeWord(copy_save_confirm_evt, 0x54, LW(14));
         writeWord(copy_save_confirm_evt, 0x120, LW(13));
         writeWord(copy_save_confirm_evt, 0x124, LW(14));
+
         // Implement new control scheme
         writeBranchLink(seq_load_sub_loadMain, 0x3E4, loadMainCtrlNew); // Replace first instruction of block with bl to new ctrl
         writeWord(seq_load_sub_loadMain, 0x3E8, B(0xD20));              // Jump to end of function (as if fade hasn't finished)
+
         // Replace button def references with new array
         writeBranchLink(windowRenderMain, 0xC4, getBtn);
         writeWord(windowRenderMain, 0xCC, MR(0, 3));
+
         // Draw arrow graphics
-        writeBranchLink(windowRenderMain, 0x1DAC, draw_arrows);
-        // Move graphics
-        writeBranchLink(windowRenderMain, 0x1360, move_mtx);
-        writeBranchLink(windowRenderMain, 0x138C, move_mtx);
-        writeBranchLink(windowRenderMain, 0x13FC, move_mtx);
-        writeBranchLink(windowRenderMain, 0x1488, move_mtx);
-        writeBranchLink(windowRenderMain, 0x15AC, move_mtx);
-        writeBranchLink(windowRenderMain, 0x1658, move_mtx);
-        writeBranchLink(windowRenderMain, 0x16F4, move_mtx);
-        writeBranchLink(windowRenderMain, 0x16B0, move_mtx);
-        writeBranchLink(windowRenderMain, 0x17F8, move_mtx);
-        writeBranchLink(windowRenderMain, 0x186C, move_mtx);
-        writeBranchLink(windowRenderMain, 0x18D4, move_mtx);
-        writeBranchLink(windowRenderMain, 0x1570, move_mtx);
-        writeBranchLink(windowRenderMain, 0x1510, move_mtx);
-        // Display accurate save file numbers (Forces English)
-        writeWord(windowRenderMain, 0x14C4, MR(4, 17)); // Moves i to param 2, replacing the original string
-        writeBranchLink(windowRenderMain, 0x14CC, write_file_num_to_menu);
+        #if defined(SPM_EU0) || defined(SPM_EU1)
+            writeBranchLink(windowRenderMain, 0x1DAC, draw_arrows);
+        #else
+            writeBranchLink(windowRenderMain, 0x1D6C, draw_arrows);
+        #endif
+
+        // Scroll graphics
+        #if defined(SPM_EU0) || defined(SPM_EU1)
+            writeBranchLink(windowRenderMain, 0x1360, move_mtx);
+            writeBranchLink(windowRenderMain, 0x138C, move_mtx);
+            writeBranchLink(windowRenderMain, 0x13FC, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1488, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1510, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1570, move_mtx);
+            writeBranchLink(windowRenderMain, 0x15AC, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1658, move_mtx);
+            writeBranchLink(windowRenderMain, 0x16B0, move_mtx);
+            writeBranchLink(windowRenderMain, 0x16F4, move_mtx);
+            writeBranchLink(windowRenderMain, 0x17F8, move_mtx);
+            writeBranchLink(windowRenderMain, 0x186C, move_mtx);
+            writeBranchLink(windowRenderMain, 0x18D4, move_mtx);
+        #else
+            writeBranchLink(windowRenderMain, 0x1354, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1380, move_mtx);
+            writeBranchLink(windowRenderMain, 0x13F0, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1478, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1500, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1560, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1598, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1640, move_mtx);
+            writeBranchLink(windowRenderMain, 0x16BC, move_mtx);
+            writeBranchLink(windowRenderMain, 0x16FC, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1750, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1794, move_mtx);
+            writeBranchLink(windowRenderMain, 0x1894, move_mtx);
+        #endif
+
+        // Display accurate save file numbers (Forces English but w/e)
+        #if defined(SPM_EU0) || defined(SPM_EU1)
+            writeWord(windowRenderMain, 0x14C4, MR(4, 17)); // Moves i to param 2, replacing the original string
+            writeBranchLink(windowRenderMain, 0x14CC, write_file_num_to_menu);
+        #else
+            writeWord(windowRenderMain, 0x14B4, MR(4, 16));
+            writeBranchLink(windowRenderMain, 0x14BC, write_file_num_to_menu);
+        #endif
     }
 
 }

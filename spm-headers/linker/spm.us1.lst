@@ -830,7 +830,7 @@
 8013148C:func_80131ee8
 8014817C:func_80148c28
 802F070C:func_802f2860
-8017C55C:loadMain
+8017C55C:seq_load_sub_loadMain
 8014F810:marioAdjustMoveDir
 803E7F88:marioCharBackPoseNames
 803E7F68:marioCharPoseNames
@@ -858,3 +858,17 @@
 80239390:spsndSFXOff
 802395C4:spsndSetSfxPlayerPos
 80234A6C:wpadGetWork
+
+804A4690:copy_save_confirm_evt
+804A4598:delete_save_confirm_evt
+8002F420:msgMain
+80033944:msgWindow_Clear_Main
+80033138:msgWindow_Main
+8023CD58:nandClearSave
+8023E430:nandDeleteSaveMain
+8023D58C:nandWriteAllSavesMain
+8023DD80:nandWriteBannerLoadAllSavesMain
+8023DA40:nandWriteSaveMain
+8056C950:seq_load_sub_wp
+8017DC30:windowRenderMain
+800E6728:evt_env_blur_on
