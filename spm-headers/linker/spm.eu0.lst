@@ -1141,6 +1141,8 @@
 801a4ca4:gxsubDrawDottedLine
 801a5134:gxsubDrawLine
 801a52e0:gxsubDrawSphere
+// data
+805ae138:gxsub_wp
 
 // memory.c
 // text
@@ -1508,6 +1510,7 @@
 8028f3b4:GXSetNumTexGens
 8028ff30:GXBegin
 802901f8:GXSetCullMode
+8029121c:GXSetChanMatColor
 802912f4:GXSetNumChans
 80291318:GXSetChanCtrl
 802915a0:GXInitTexObj
@@ -1531,6 +1534,7 @@
 80293420:GXSetAlphaUpdate
 8029344c:GXSetZMode
 80293480:GXSetZCompLoc
+80293658:GXDrawSphere
 80294214:GXSetProjection
 80294304:GXLoadPosMtxImm
 802943ac:GXSetCurrentMtx

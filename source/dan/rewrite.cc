@@ -537,48 +537,37 @@ namespace mod {
 
     // Patches Dimentio to have a dynamic movement zone rather than being hardcoded for one room.
     s32 dimen_determine_move_pos_new(evtmgr::EvtEntry * entry, bool isFirstCall) {
-        mario::MarioWork * marioWork = mario::marioGetPtr();
+        mario::MarioWork * mw = mario::marioGetPtr();
         npcdrv::NPCEntry * npc = (npcdrv::NPCEntry *)entry->ownerNPC;
-        double destYPos = 0;
-        f32 marioZ = ((marioWork->position).z);
-        f32 destXPos = 0;
-        u32 dimenMoveRand = 0;
-        wii::mtx::Vec3 min;
-        wii::mtx::Vec3 max;
+        f32 dest_x, dest_y, dest_z = mw->position.z;
+        wii::mtx::Vec3 min, max;
         hitdrv::hitGetMapEntryBbox(0, &min, &max);
-        s32 i = 0;
         do {
-            while (true) {
-                do {
-                    i = i + 1;
-                    dimenMoveRand = system::irand(400);
-                    destXPos = ((marioWork->position).x + (f32)dimenMoveRand - 200);
-                    if (i > 50) {
-                        destXPos = npc->position.x;
-                        goto outOfBounds;
-                    }
-                } while ((destXPos <= (min.x + 25)) || ((max.x - 25) <= destXPos));
-            outOfBounds:
-                u32 yMoveBehavior = system::irand(100);
-                if (yMoveBehavior < 67) {
-                    dimenMoveRand = system::irand(4);
-                    destYPos = (10.0 * (f32)dimenMoveRand + 20.0);
-                } else {
-                    dimenMoveRand = system::irand(3);
-                    destYPos = (32.0 * (f32)dimenMoveRand + 40.0);
-                }
-                if (npc->flippedTo3d != 0)
+            s32 i = 0;
+            do {
+                dest_x = (mw->position.x + (f32)system::irand(400) - 200.0f);
+                if (i++ > 50) {
+                    dest_x = npc->position.x;
                     break;
-                if ((100.0 < abs_value((destXPos - (marioWork->position).x))) || (80.0 < destYPos))
-                    goto setFloats;
+                }
+            } while ((dest_x <= (min.x + 25.0f)) || ((max.x - 25.0f) <= dest_x));
+            if (system::irand(100) < 67) {
+                dest_y = (10.0f * (f32)system::irand(4) + 20.0f);
+            } else {
+                dest_y = (32.0f * (f32)system::irand(3) + 40.0f);
             }
-            destYPos = system::distABf(destXPos, marioZ, ((marioWork->position).x), marioZ);
-        } while ((destYPos <= 120.0) && (destYPos <= 80.0));
-    setFloats:
+            if (npc->flippedTo3d) {
+                dest_y = system::distABf(dest_x, dest_z, mw->position.x, dest_z);
+                break;
+            }
+            if ((100.0f < abs_value((dest_x - mw->position.x))) || (80.0f < dest_y)) {
+                break;
+            }
+        } while ((dest_y <= 120.0f) && (dest_y <= 80.0f));
         evtmgr::EvtVar * args = (evtmgr::EvtVar *)entry->pCurData;
-        evtmgr_cmd::evtSetFloat(entry, args[0], destXPos);
-        evtmgr_cmd::evtSetFloat(entry, args[1], destYPos);
-        evtmgr_cmd::evtSetFloat(entry, args[2], marioZ);
+        evtmgr_cmd::evtSetFloat(entry, args[0], dest_x);
+        evtmgr_cmd::evtSetFloat(entry, args[1], dest_y);
+        evtmgr_cmd::evtSetFloat(entry, args[2], dest_z);
         return 2;
     }
 

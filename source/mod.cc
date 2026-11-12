@@ -3,7 +3,7 @@
 #include "patch.h"
 #include "romfontexpand.h"
 #include <acpatch.h>
-//#include <berobero.h>
+// #include <berobero.h>
 #include <common.h>
 #include <customwin.h>
 #include <effpatch.h>
@@ -73,6 +73,7 @@
 #include <spm/fadedrv.h>
 #include <spm/fontmgr.h>
 #include <spm/framedrv.h>
+#include <spm/gxsub.h>
 #include <spm/hitdrv.h>
 #include <spm/hud.h>
 #include <spm/item_data.h>
@@ -1043,21 +1044,13 @@ namespace mod {
         return;
     }
 
-// I hate how I had to do this; the ASM context for deciding big or small coins in vanilla is very complex. (It's also region-dependent. Fun.)
+    // I hate how I had to do this; the ASM context for deciding big or small coins in vanilla is very complex. (It's also region-dependent. Fun.)
+    void makeCoinsBig(s32 null, s32 itemId) {
 #if defined(SPM_EU0) || defined(SPM_EU1)
-    void makeCoinsBig(s32 null, s32 itemId) {
         asm("addi 27, 3, 14");
-        asm("mr 4, 30");
-        if (itemId == item_data::ITEM_ID_WORLD_COIN && system::irand(9) == 0 && VoucherGetStateById(VOUCHER_YELLOW) == V_ACTIVE) {
-            VoucherProc(VOUCHER_YELLOW);
-            asm("li 30, 2");
-            return;
-        }
-        return;
-    }
 #else
-    void makeCoinsBig(s32 null, s32 itemId) {
         asm("addi 28, 3, 14");
+#endif
         asm("mr 4, 30");
         if (itemId == item_data::ITEM_ID_WORLD_COIN && system::irand(9) == 0 && VoucherGetStateById(VOUCHER_YELLOW) == V_ACTIVE) {
             VoucherProc(VOUCHER_YELLOW);
@@ -1066,7 +1059,6 @@ namespace mod {
         }
         return;
     }
-#endif
 
     void danResetLunatic() {
         mario_pouch::MarioPouchWork * pouch = mario_pouch::pouchGetPtr();
@@ -1738,6 +1730,47 @@ namespace mod {
         texObj->stage = stage + 1;
         return;
     }
+
+    // Based heavily on npcHitboxDisp & its gxsub function calls
+    /*void TokiWoTomare_Test() {
+        wii::mtx::Mtx34 mtxPos, mtxScl;
+        wii::gx::GXColor color = {255, 255, 255, 255};
+        mario::MarioWork * mw = mario::marioGetPtr();
+        f32 scale = mw->dashSpeed * 10.0f;
+        wii::mtx::PSMTXTrans(mtxPos, mw->position.x, mw->position.y, mw->position.z);
+        wii::mtx::PSMTXScale(mtxScl, scale, scale, scale);
+        wii::mtx::PSMTXConcat(mtxPos, mtxScl, mtxPos);
+        gxsub::gxsubInit_Cam(camdrv::camGetPtr(camdrv::CAM_ID_3D));
+        //wii::gx::GXSetBlendMode(0, 4, 5, 0);
+        // Attempt negative
+        wii::gx::GXSetChanMatColor(4, &color);
+        wii::gx::GXSetTevOrder(0, 255, 255, 255);
+        wii::gx::GXSetBlendMode(2, 2, 2, 12);
+        wii::gx::GXSetAlphaUpdate(1);
+        wii::gx::GXSetColorUpdate(1);
+        wii::gx::GXSetTevColorIn(0, 0, 0, 0, 15);
+        wii::gx::GXSetTevAlphaIn(0, 7, 7, 7, 0);
+        
+        // End
+        wii::gx::GXSetZCompLoc(0);
+        wii::gx::GXSetAlphaCompare(6, 128, 1, 0, 0);
+        wii::gx::GXSetZMode(0, 7, 0);
+        wii::gx::GXSetCullMode(2);
+        //wii::gx::GXSetChanMatColor(4, &color);
+        wii::mtx::PSMTXConcat(gxsub::gxsub_wp->cam->viewMtx, mtxPos, mtxPos);
+        wii::gx::GXLoadPosMtxImm(mtxPos, 0);
+        wii::gx::GXSetCurrentMtx(0);
+        wii::gx::GXDrawSphere(16, 16);
+        return;
+    }*/
+
+    /*s32 TokiTest(evtmgr::EvtEntry * evtEntry, bool firstCall) {
+        (void)evtEntry;
+        (void)firstCall;
+        dispdrv::dispEntry(camdrv::CAM_ID_3D, 0xB, dispdrv::dispCalcZ(&mario::marioGetPtr()->position), (dispdrv::DispCallback *)TokiWoTomare_Test, nullptr);
+        return 0;
+    }
+    EVT_DECLARE_USER_FUNC(TokiTest, 0)*/
 
     static void patchNpcRgbaFuncs() {
         patch::hookFunction(evt_npc::evt_npc_set_color, [](evtmgr::EvtEntry * evtEntry, bool firstRun) {
@@ -6001,6 +6034,10 @@ namespace mod {
     USER_FUNC(evt_npc::evt_npc_set_property, PTR("jimbo"), 9, PTR(fwd_jimbo_speech))
     USER_FUNC(evt_npc::evt_npc_add_flip_part, PTR("jimbo"))
     USER_FUNC(evt_npc::evt_npc_set_scale, PTR("jimbo"), FLOAT(1.1287), FLOAT(1.1287), FLOAT(1.1287))
+    // test
+    /*INLINE_EVT()
+    USER_FUNC(TokiTest)
+    END_INLINE()*/
     RETURN_FROM_CALL()
 
     EVT_BEGIN(global_operations_non_dan)
