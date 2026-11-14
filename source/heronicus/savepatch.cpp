@@ -153,8 +153,12 @@ namespace mod::savepatch {
         return loadMainReal();
     }
 
-    s32 new_sprintf(char * buffer, const char * saveName, s32 saveId) {
+    s32 get_savefile_num(char * buffer, const char * saveName, s32 saveId) {
         saveId += (savepatch_wp->page * 4);
+        return msl::stdio::sprintf(buffer, "%s%02d", savepatch_wp->saveName, saveId);
+    }
+
+    s32 set_savefile_num(char * buffer, const char * saveName, s32 saveId) {
         return msl::stdio::sprintf(buffer, "%s%02d", savepatch_wp->saveName, saveId);
     }
 
@@ -304,16 +308,16 @@ namespace mod::savepatch {
         loadMainReal = patch::hookFunction(seq_load_sub_loadMain, seq_load_sub_chg_saves);
 
         // Read refs to custom saves instead of wiimarioXX saves
-        writeBranchLink(nandWriteBannerLoadAllSavesMain, 0x42C, new_sprintf);
+        writeBranchLink(nandWriteBannerLoadAllSavesMain, 0x42C, get_savefile_num);
         #if defined(SPM_US2)
-            writeBranchLink(nandWriteAllSavesMain, 0x178, new_sprintf); 
-            writeBranchLink(nandWriteAllSavesMain, 0x204, new_sprintf);
+            writeBranchLink(nandWriteAllSavesMain, 0x178, set_savefile_num);
+            writeBranchLink(nandWriteAllSavesMain, 0x204, set_savefile_num);
         #else
-            writeBranchLink(nandWriteAllSavesMain, 0x184, new_sprintf); 
-            writeBranchLink(nandWriteAllSavesMain, 0x210, new_sprintf);
+            writeBranchLink(nandWriteAllSavesMain, 0x184, set_savefile_num); 
+            writeBranchLink(nandWriteAllSavesMain, 0x210, set_savefile_num);
         #endif
-        writeBranchLink(nandWriteSaveMain, 0x16C, new_sprintf);
-        writeBranchLink(nandDeleteSaveMain, 0x15C, new_sprintf);
+        writeBranchLink(nandWriteSaveMain, 0x16C, get_savefile_num);
+        writeBranchLink(nandDeleteSaveMain, 0x15C, get_savefile_num);
 
         // Extend nandmgr savefile allocation space
         nandInitNew();

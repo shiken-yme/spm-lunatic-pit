@@ -256,7 +256,7 @@ namespace mod {
         VoucherWork * Voucher = VoucherItemIdToPtr(itemId);
         Voucher->isSpinning = true;
         if (Voucher->iconRotationTimer == 0)
-            spmario_snd::__spsndSFXOn("SFX_MINI_ROUND_CLEAR1", 100, 255, 0, nullptr, 0);
+            spmario_snd::__spsndSFXOn("SFX_MINI_ROUND_CLEAR1", 127, 255, 0, nullptr, 0);
         Voucher->iconRotation = system::intplGetValue(4, 0.0f, 360.0f, Voucher->iconRotationTimer, 60);
         Voucher->iconRotationTimer += 1;
         if (Voucher->iconRotation >= 359.5f) {

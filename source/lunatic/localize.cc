@@ -183,6 +183,10 @@ namespace mod {
             msl::stdio::sprintf(tattleMsgs[i], "anna_%s", item_data::itemDataTable[tribe->catchCardItemId].descMsg);
             msgpatch::msgpatchAddEntry(tattleMsgs[i], data[i].tattleMsg, true);
         };
+        // Save stuff
+        msgpatch::msgpatchAddEntry("msg_mcard_make_data", msg_mcard_make_data, true);
+        msgpatch::msgpatchAddEntry("msg_mcard_make_data_warning", msg_mcard_make_data_warning, true);
+        msgpatch::msgpatchAddEntry("msg_mcard_make_data_finish", msg_mcard_make_data_finish, true);
         // Misc
         msgpatch::msgpatchAddEntry("D100_entrance_03", D100_entrance_03, true);
         msgpatch::msgpatchAddEntry("mac_kanban_004", mac_kanban_004, true);

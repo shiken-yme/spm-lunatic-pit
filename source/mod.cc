@@ -2537,9 +2537,9 @@ namespace mod {
         //    OSREPORTF("def0_1: %d.\n", def0_1.defense);
         //    OSREPORTF("defterm: %d.\n", defterm.defense);
 
-        // Force all enemies' stylish XP to be lower
+        // Force all enemies' stylish XP to be exactly proportional to killXp
         for (s32 i = 0; i < NPCTRIBE_MAX; i += 1)
-            npcdrv::npcTribes[i].stylishXp = (npcdrv::npcTribes[i].killXp / 15);
+            npcdrv::npcTribes[i].stylishXp = (npcdrv::npcTribes[i].killXp / 50);
 
         // Let's replace the pit key texture while we're at it lol
         // Ty kiki!!! <3
@@ -6397,7 +6397,7 @@ namespace mod {
     ADD(LW(8), 50)
     USER_FUNC(evt_npc::evt_npc_arc_to, PTR("me"), LW(11), LW(8), LW(9), 800, 0, 45, 0, 16, 0)
     USER_FUNC(evt_npc::evt_npc_get_position, PTR("me"), LW(11), LW(8), LW(9))
-    USER_FUNC(kami_bomb, 5200)
+    USER_FUNC(kami_bomb, 5000)
     USER_FUNC(evt_eff::evt_eff, 0, PTR("spm_explosion"), 2, LW(11), LW(8), LW(9), FLOAT(1.0), 0, 0, 0, 0, 0, 0, 0)
     USER_FUNC(evt_snd::evt_snd_sfxon_3d, PTR("SFX_E_CAMEREBOM2_EXPLOSION1"), LW(11), LW(8), LW(9))
     INLINE_EVT()
@@ -6416,7 +6416,7 @@ namespace mod {
     IF_EQUAL(LW(11), 10)
     // Explosion #1
     USER_FUNC(evt_npc::evt_npc_get_position, PTR("me"), LW(11), LW(8), LW(9))
-    USER_FUNC(kami_bomb, 5200)
+    USER_FUNC(kami_bomb, 5000)
     USER_FUNC(evt_eff::evt_eff, 0, PTR("spm_explosion"), 2, LW(11), LW(8), LW(9), FLOAT(1.0), 0, 0, 0, 0, 0, 0, 0)
     USER_FUNC(evt_snd::evt_snd_sfxon_3d, PTR("SFX_E_CAMEREBOM2_EXPLOSION1"), LW(11), LW(8), LW(9))
     INLINE_EVT()
@@ -6449,7 +6449,7 @@ namespace mod {
     EVT_BEGIN(bomb_boo_atk)
     USER_FUNC(evt_npc::evt_npc_get_property, PTR("me"), 13, LW(13))
     IF_EQUAL(LW(13), 86)
-    USER_FUNC(kami_bomb, 6900)
+    USER_FUNC(kami_bomb, 6000)
     USER_FUNC(evt_npc::evt_npc_get_position, PTR("me"), LW(13), LW(14), LW(15))
     USER_FUNC(evt_eff::evt_eff, 0, PTR("spm_explosion"), 2, LW(13), LW(14), LW(15), FLOAT(1.2), 0, 0, 0, 0, 0, 0, 0)
     USER_FUNC(evt_snd::evt_snd_sfxon_3d, PTR("SFX_E_CAMEREBOM2_EXPLOSION1"), LW(13), LW(14), LW(15))

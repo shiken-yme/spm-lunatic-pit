@@ -778,7 +778,8 @@ namespace mod {
                     } else {                                                                   // Next 30 frames; deceleration phase
                         s32 progress = (s32)(mario->motTime - 30.0);
                         mario->xzSpeed = system::intplGetValue(4, mario->motTempF[0], 0.0, progress, 30) * mario::marioGetGameSpeedScale();
-                        mario->xzSpeedFactor = system::intplGetValue(4, mario->xzSpeedFactor, 480.0f, progress, 30) * mario::marioGetGameSpeedScale();
+                        if (mario->xzSpeed > 0.0f)
+                            mario->xzSpeedFactor = system::intplGetValue(4, mario->xzSpeedFactor, 480.0f, progress, 30) * mario::marioGetGameSpeedScale();
                     }
                 }
             } else { // After 60 frames of spindashing

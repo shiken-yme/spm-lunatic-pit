@@ -15,6 +15,7 @@ namespace mod {
 
 /*
     Macros to reduce redundancy somewhat
+    Todo: see if removing some of these linebreaks ever affects anything
 */
 
 // Start a new text box
@@ -38,7 +39,7 @@ namespace mod {
 // Suspend a text box with a text selection prompt
 #define PROMPT "<o>"
 
-// I don't think this will ever be used in its current state, but just in case
+// I don't think this will ever be used in its current state, but keeping it here just in case
 #define STR(text) \
     #text "\n"
 
@@ -54,6 +55,28 @@ namespace mod {
         const char * cardMsg;
         const char * tattleMsg;
     };
+
+    const char msg_mcard_make_data[] =
+        CONT_SYS
+        "Lunatic Pit uses a custom save\n"
+        "file system.<wait 300> Vanilla saves are\n"
+        "not touched by this mod.\n" BRK
+        "Would you like to create a\n"
+        "new set of save files for\n"
+        "Lunatic Pit?\n" PROMPT;
+
+    const char msg_mcard_make_data_warning[] =
+        CONT_SYS
+        "Creating new saves...<wait 300> and it\n"
+        "may take a while!<wait 300> Please watch\n"
+        "warmly until it is ready.\n" PROMPT;
+
+    const char msg_mcard_make_data_finish[] =
+        CONT_SYS
+        "<wave>Done!\n</wave>" BRK
+        "Thanks for playing Lunatic\n"
+        "Pit;<wait 300> I hope you enjoy it as\n"
+        "much as I enjoy making it." END PROMPT; // Idk if the PROMPT is necessary but this is what vanilla does. Preserving it just in case.
 
     const char savefile_start_noversion[] =
         INIT_SYS
@@ -297,8 +320,8 @@ namespace mod {
         "keys for when you encounter\n"
         "a Rare or Legendary chest!\n" BRK
         "You can reroll the chest\n"
-        "rarity, but only before you\n"
-        "open the chest.\n" BRK
+        "rarity at any time, even if\n"
+        "you open it.\n" BRK
         "Rerolls cost one chest key,\n"
         "but each reroll will make the\n"
         "next one more expensive!\n" BRK
