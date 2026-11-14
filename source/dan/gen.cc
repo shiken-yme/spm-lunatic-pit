@@ -1110,7 +1110,7 @@ namespace mod {
         return itemId;
     }
 
-    // todo: add more DanGen_Items logic here, make rerolls more likely to hit higher tiers, and make higher tiers slightly more likely in later floors
+    // todo: add more DanGen_Items logic here & MAYBE make higher tiers slightly more likely in later floors
     s32 DanGen_GetChestRarity(s32 preRarity, bool onRoomLoad) {
         s32 odds = system::rand() % 100, rarity, vs;
         if (odds < 40) // 40% for Common
@@ -1121,13 +1121,20 @@ namespace mod {
             rarity = 2;
         else // 10% for Legendary
             rarity = 3;
-        if (!onRoomLoad && preRarity >= rarity) {
+        if (onRoomLoad) {
+            Lunatic->RFC.initialChestRarity = rarity;
+        } else if (preRarity >= rarity) {
             odds = system::rand() % 100;
-            // Base 34% chance to hit "pity" & guarantee rarity 1 higher than starting rarity
-            // Each add'l reroll increases "pity" by 16 (34 -> 50 -> 66 -> 82 -> 98, etc.)
-            vs = 34 + ((Lunatic->RFC.rerolls - 1) * 16); 
-            if (odds < vs)
-                rarity = preRarity + 1;
+            /*
+                Base 25% chance to hit "pity" & guarantee rarity 1 higher than initial rarity
+                Each add'l reroll increases "pity" by 25 (25 -> 50 -> 75 -> 100)
+                Striking pity will block it from happening again in the same room
+            */
+            vs = 25 + ((Lunatic->RFC.rerolls - 1) * 25);
+            if (odds < vs && !Lunatic->RFC.pityStruck) {
+                Lunatic->RFC.pityStruck = true;
+                rarity = Lunatic->RFC.initialChestRarity + 1;
+            }
             rarity = clamp(rarity, 0, 3);
         }
         return rarity;
@@ -1137,6 +1144,7 @@ namespace mod {
         s32 rarity = 0, itemRarity = 0, odds = 0, i = 0, itemId = 0;
         VoucherState vState = VoucherGetStateById(VOUCHER_STELLAR);
         if (onRoomLoad) {
+            Lunatic->RFC.pityStruck = false;
             Lunatic->RFC.rerolls = 0;
             Lunatic->RFC.rerollCost = 1;
             if (vState == V_ACTIVE) {

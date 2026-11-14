@@ -266,6 +266,7 @@ namespace mod {
         u32 rerollCost;
         s32 chestKeys;
         s32 chestRarity;
+        s32 initialChestRarity;
         bool rfcSpecialObtained[LPCUSTOMITEM_MAX];
         RFCItemData * rfcItemData[3];
         s32 rfcItemIds[3];
@@ -273,6 +274,7 @@ namespace mod {
         u8 chestKeysToSpawn[4];
         u8 chestKeysOwned;
         bool chestKeySpawned;
+        bool pityStruck;
     };
 
     enum RFNPCId : u8 {
