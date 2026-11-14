@@ -2537,9 +2537,9 @@ namespace mod {
         //    OSREPORTF("def0_1: %d.\n", def0_1.defense);
         //    OSREPORTF("defterm: %d.\n", defterm.defense);
 
-        // Force all enemies' stylish XP to be exactly proportional to killXp
+        // Force all enemies' stylish XP to be proportional to killXp or at most 100
         for (s32 i = 0; i < NPCTRIBE_MAX; i += 1)
-            npcdrv::npcTribes[i].stylishXp = (npcdrv::npcTribes[i].killXp / 50);
+            npcdrv::npcTribes[i].stylishXp = clamp((npcdrv::npcTribes[i].killXp / 10), 0, 100);
 
         // Let's replace the pit key texture while we're at it lol
         // Ty kiki!!! <3
